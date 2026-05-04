@@ -1,0 +1,4 @@
+spring:
+  application:
+    admin:
+      jmx-name: back
