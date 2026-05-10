@@ -1,20 +1,23 @@
 package hosp.pharm.back.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import hosp.pharm.back.constant.ProductType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "product")
 @EqualsAndHashCode(callSuper = true)
 public class ProductEntity extends AbstractEntity {
 
@@ -25,14 +28,22 @@ public class ProductEntity extends AbstractEntity {
 
     private String description;
 
+    private Boolean active;
+
     private UUID imageId;
 
     private Boolean isRequiredRecipe;
 
     private String manufacturer;
 
-    private Long countryOfOriginId;
+    @JsonBackReference
+    @EqualsAndHashCode.Exclude
+    @JoinColumn(name = "country_of_origin_id", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
+    private CountryEntity countryOfOrigin;
 
-    private String countryOfOriginName;
-
+    @JsonManagedReference
+    @EqualsAndHashCode.Exclude
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<BatchEntity> batches = new LinkedHashSet<>();
 }

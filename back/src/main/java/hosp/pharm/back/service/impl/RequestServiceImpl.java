@@ -1,6 +1,8 @@
 package hosp.pharm.back.service.impl;
 
+import hosp.pharm.back.filter.AnalyticFilter;
 import hosp.pharm.back.filter.RequestFilter;
+import hosp.pharm.back.model.dto.analytic.RequestAnalyticDto;
 import hosp.pharm.back.model.dto.create.RequestCreateDto;
 import hosp.pharm.back.model.dto.response.RequestFullResponseDto;
 import hosp.pharm.back.model.dto.response.RequestShortResponseDto;
@@ -24,12 +26,22 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    public RequestFullResponseDto getById(Long id) {
+        return null;
+    }
+
+    @Override
     public RequestFullResponseDto create(final RequestCreateDto dto) {
         return null;
     }
 
     @Override
     public RequestFullResponseDto update(final RequestUpdateDto dto) {
+        return null;
+    }
+
+    @Override
+    public RequestAnalyticDto getAnalytic(AnalyticFilter filter) {
         return null;
     }
 }
