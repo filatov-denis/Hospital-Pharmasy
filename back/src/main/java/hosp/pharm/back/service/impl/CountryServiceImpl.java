@@ -1,5 +1,7 @@
 package hosp.pharm.back.service.impl;
 
+import hosp.pharm.back.exception.EntityNotFoundException;
+import hosp.pharm.back.exception.NullIdentifierException;
 import hosp.pharm.back.filter.CountryFilter;
 import hosp.pharm.back.mapper.CountryMapper;
 import hosp.pharm.back.model.dto.response.CountryResponseDto;
@@ -12,8 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -38,15 +38,8 @@ public class CountryServiceImpl implements CountryService {
 
     @Override
     public CountryResponseDto getById(Long id) {
-        //add error handling
+        if(id == null) throw new NullIdentifierException();
 
-        final Optional<CountryEntity> optional = repository.findById(id);
-
-        if(optional.isEmpty()) {
-            //change
-            throw new NoSuchElementException();
-        }
-
-        return mapper.toDto(optional.get());
+        return mapper.toDto(repository.findById(id).orElseThrow(EntityNotFoundException::new));
     }
 }

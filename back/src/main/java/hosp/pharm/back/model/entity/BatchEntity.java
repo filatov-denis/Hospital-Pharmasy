@@ -31,6 +31,8 @@ public class BatchEntity extends AbstractEntity {
 
     private Integer count;
 
+    private boolean active;
+
     private LocalDateTime manufactureDate;
 
     private LocalDateTime expirationDate;

@@ -21,7 +21,7 @@ public class UserEntity extends AbstractEntity {
 
     private String surname;
 
-    private String lastName;
+    private String lastname;
 
     private Boolean active;
 

@@ -20,7 +20,7 @@ public class ServiceExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ServiceException.class)
     ResponseEntity<Object> handleCustomConflict(ServiceException ex, WebRequest request) {
-        log.error("Custom exception occured - [{}], message - [{}]", ex.getClass().getName(), ex.getMessage());
+        log.error("Custom exception occurred - [{}], message - [{}]", ex.getClass().getName(), ex.getMessage());
 
         return super.handleExceptionInternal(ex, ex.getMessage(),
                 new HttpHeaders(), ex.getStatusCode(), request);
@@ -28,7 +28,7 @@ public class ServiceExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
-        log.error("Unexpected exception occured - [{}], message - [{}]", ex.getClass().getName(), ex.getMessage());
+        log.error("Unexpected exception occurred - [{}], message - [{}]", ex.getClass().getName(), ex.getMessage());
 
         return super.handleExceptionInternal(ex, UNEXPECTED_ERROR.getValue(),
                 new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);

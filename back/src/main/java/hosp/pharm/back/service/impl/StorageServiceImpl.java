@@ -1,42 +1,96 @@
 package hosp.pharm.back.service.impl;
 
+import hosp.pharm.back.exception.EntityNotFoundException;
+import hosp.pharm.back.exception.NullIdentifierException;
 import hosp.pharm.back.filter.StorageFilter;
+import hosp.pharm.back.mapper.StorageMapper;
 import hosp.pharm.back.model.dto.create.StorageCreateDto;
 import hosp.pharm.back.model.dto.response.StorageFullResponseDto;
 import hosp.pharm.back.model.dto.response.StorageShortResponseDto;
 import hosp.pharm.back.model.dto.update.StorageUpdateDto;
+import hosp.pharm.back.model.entity.BatchEntity;
+import hosp.pharm.back.model.entity.StorageEntity;
+import hosp.pharm.back.repository.StorageRepository;
 import hosp.pharm.back.service.StorageService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class StorageServiceImpl implements StorageService {
 
+    private final StorageRepository storageRepository;
+
+    private final StorageMapper storageMapper = StorageMapper.INSTANCE;
+
     @Override
-    public Page<StorageShortResponseDto> getAll(StorageFilter filter, Pageable pageable) {
-        return null;
+    public Page<StorageShortResponseDto> getAll(final StorageFilter filter, final Pageable pageable) {
+        Page<StorageEntity> entities;
+
+        if (StringUtils.isEmpty(filter.getName())) {
+            entities = storageRepository.findByNameContains(filter.getName(), pageable);
+        } else {
+            entities = storageRepository.findAll(pageable);
+        }
+
+        final List<StorageShortResponseDto> dtos = entities.get().map(storageMapper::toShortDto).toList();
+        long totalElements = entities.getTotalElements();
+
+        return new PageImpl(dtos, pageable, totalElements);
     }
 
     @Override
-    public StorageFullResponseDto getById(Long id) {
-        return null;
+    public StorageFullResponseDto getById(final Long id) {
+        final StorageEntity entity = getStorageById(id);
+
+        return storageMapper.toFullDto(entity);
     }
 
     @Override
-    public StorageFullResponseDto create(StorageCreateDto dto) {
-        return null;
+    public StorageFullResponseDto create(final StorageCreateDto dto) {
+        final StorageEntity entity = new StorageEntity();
+        entity.setName(dto.getName());
+
+        final StorageEntity persisted = storageRepository.save(entity);
+
+        return storageMapper.toFullDto(persisted);
     }
 
     @Override
-    public StorageFullResponseDto update(StorageUpdateDto dto) {
-        return null;
+    public StorageFullResponseDto update(final StorageUpdateDto dto) {
+        final StorageEntity entity = getStorageById(dto.getId());
+
+        entity.setName(dto.getName());
+
+        for(BatchEntity batch : entity.getBatches()) {
+            if(entity.getActive() && !dto.getBatchIds().contains(entity.getId())) {
+                batch.setActive(false);
+            }
+        }
+
+        final StorageEntity persisted = storageRepository.save(entity);
+
+        return storageMapper.toFullDto(persisted);
     }
 
     @Override
-    public void disable(Long id) {
+    public void disable(final Long id) {
+        final StorageEntity entity = getStorageById(id);
 
+        entity.setActive(false);
+        storageRepository.save(entity);
     }
+
+    private StorageEntity getStorageById(final Long id) {
+        if(id == null) throw new NullIdentifierException();
+
+        return storageRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    }
+
 }

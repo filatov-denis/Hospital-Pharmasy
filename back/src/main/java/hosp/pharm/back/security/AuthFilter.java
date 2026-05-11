@@ -1,11 +1,13 @@
 package hosp.pharm.back.security;
 
+import hosp.pharm.back.exception.MissingTokenException;
 import hosp.pharm.back.service.AuthService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
@@ -22,10 +24,10 @@ public class AuthFilter extends OncePerRequestFilter {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
-    private final List<RequestMatcher> paths = List.of(AntPathRequestMatcher.antMatcher("/api/v1/auth/authenticate"),
-            AntPathRequestMatcher.antMatcher("/swagger-ui.html"), AntPathRequestMatcher.antMatcher("/swagger-ui/**"),
-            AntPathRequestMatcher.antMatcher("/swagger-resources/**"), AntPathRequestMatcher.antMatcher("/v3/api-docs"),
-            AntPathRequestMatcher.antMatcher("/v3/api-docs/**"));
+    private final List<RequestMatcher> paths = List.of(PathPatternRequestMatcher.pathPattern("/api/v1/auth/authenticate"),
+            PathPatternRequestMatcher.pathPattern("/swagger-ui.html"), PathPatternRequestMatcher.pathPattern("/swagger-ui/**"),
+            PathPatternRequestMatcher.pathPattern("/swagger-resources/**"), PathPatternRequestMatcher.pathPattern("/v3/api-docs"),
+            PathPatternRequestMatcher.pathPattern("/v3/api-docs/**"));
 
     private final AuthService authService;
 

@@ -1,5 +1,8 @@
 package hosp.pharm.back.service.impl;
 
+import hosp.pharm.back.exception.ExpiredTokenException;
+import hosp.pharm.back.exception.InvalidCredentialsException;
+import hosp.pharm.back.exception.InvalidTokenException;
 import hosp.pharm.back.mapper.UserMapper;
 import hosp.pharm.back.model.dto.auth.AuthenticationDto;
 import hosp.pharm.back.model.dto.auth.JwtAuthenticationDto;
@@ -14,13 +17,13 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +36,6 @@ import java.util.function.Function;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     @Value("${spring.jwt.key}")
@@ -49,7 +51,15 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
 
+    private final PasswordEncoder encoder;
+
     private final UserMapper userMapper = UserMapper.INSTANCE;
+
+    public AuthServiceImpl(final UserService userService, final UserRepository userRepository) {
+        this.userService = userService;
+        this.userRepository = userRepository;
+        this.encoder = userService.getEncoder();
+    }
 
     @Override
     public void authorize(final HttpServletRequest request, final HttpServletResponse response, final String token) {
@@ -79,12 +89,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public JwtAuthenticationDto authenticate(AuthenticationDto dto) {
-        final Optional<UserEntity> optional = userRepository.findByUsername(dto.getUsername());
+        final Optional<UserEntity> optional = userRepository.findByUsernameAndActiveTrue(dto.getUsername());
 
         if(optional.isEmpty()) throw new InvalidCredentialsException();
 
-        UserEntity user = optional.get();
-        if(!user.getPassword().equals(dto.getPassword())) throw new InvalidCredentialsException();
+        final UserEntity user = optional.get();
+
+        if(!user.getPassword().equals(encoder.encode(dto.getPassword()))) throw new InvalidCredentialsException();
 
         return new JwtAuthenticationDto(generateToken(userMapper.toAuthUser(user)));
     }
@@ -116,7 +127,8 @@ public class AuthServiceImpl implements AuthService {
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {
         final Claims claims = Jwts.parser()
-                .setSigningKey(getSigningKey()).build().parseClaimsJws(token)
+                .setSigningKey(getSigningKey()).build()
+                .parseClaimsJws(token)
                 .getBody();
         return claimsResolvers.apply(claims);
     }
