@@ -7,6 +7,7 @@ import hosp.pharm.back.service.BatchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,15 +22,15 @@ public class BatchController {
 
     private final BatchService batchService;
 
-    @GetMapping("{storageId}")
+    @GetMapping("/{storageId}")
     @Operation(summary = "Получить партии", description = "Позволяет получить партии конкретного склада")
-    public Page<BatchResponseDto> getAll(@PathVariable Long storageId, final Pageable pageable) {
+    public Page<BatchResponseDto> getAllOfStorage(@PathVariable @NotNull final Long storageId, final Pageable pageable) {
         return batchService.getAll(storageId, pageable);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Получить конкретного партию", description = "Выводит подробную информацию по конкретной партии")
-    public BatchResponseDto getById(@PathVariable Long id) {
+    public BatchResponseDto getById(@PathVariable final Long id) {
         return batchService.getById(id);
     }
 
@@ -47,7 +48,7 @@ public class BatchController {
 
     @DeleteMapping("{id}")
     @Operation(summary = "Отключение партии", description = "Делает партию неактивной")
-    public void disable(@PathVariable Long id) {
+    public void disable(@PathVariable final Long id) {
         batchService.disable(id);
     }
 

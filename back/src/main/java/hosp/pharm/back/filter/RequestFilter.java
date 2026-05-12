@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RequestFilter {
+public class RequestFilter extends AbstractFilter {
 
     private Long creatorId;
 

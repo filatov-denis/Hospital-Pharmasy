@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/auth")
 @Tag(name = "Авторизация", description = "Содержит операции, связанные с верификацией пользователей")
 public class AuthController {
 
@@ -24,7 +24,7 @@ public class AuthController {
 
     @PostMapping("/authenticate")
     @Operation(summary = "Аутентификация", description = "Позволяет получить доступ в систему")
-    public JwtAuthenticationDto authenticate(@RequestBody @Valid AuthenticationDto dto) {
+    public JwtAuthenticationDto authenticate(@RequestBody @Valid final AuthenticationDto dto) {
         return authService.authenticate(dto);
     }
 

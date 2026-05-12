@@ -10,7 +10,7 @@ import hosp.pharm.back.model.dto.response.StorageShortResponseDto;
 import hosp.pharm.back.model.dto.update.StorageUpdateDto;
 import hosp.pharm.back.model.entity.BatchEntity;
 import hosp.pharm.back.model.entity.StorageEntity;
-import hosp.pharm.back.repository.StorageRepository;
+import hosp.pharm.back.dao.repository.StorageRepository;
 import hosp.pharm.back.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +42,7 @@ public class StorageServiceImpl implements StorageService {
         final List<StorageShortResponseDto> dtos = entities.get().map(storageMapper::toShortDto).toList();
         long totalElements = entities.getTotalElements();
 
-        return new PageImpl(dtos, pageable, totalElements);
+        return new PageImpl<>(dtos, pageable, totalElements);
     }
 
     @Override

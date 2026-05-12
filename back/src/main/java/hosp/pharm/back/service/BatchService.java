@@ -18,5 +18,4 @@ public interface BatchService {
 
     void disable(final Long id);
 
-
 }

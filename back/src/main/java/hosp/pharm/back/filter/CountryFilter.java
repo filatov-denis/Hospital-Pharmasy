@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CountryFilter {
+public class CountryFilter extends AbstractFilter{
 
     private String name;
 

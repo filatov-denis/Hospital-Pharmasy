@@ -29,7 +29,7 @@ public class StorageController {
         return storageService.getAll(filter, pageable);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Получить конкретный склад", description = "Выводит подробную информацию по конкретному складу")
     public StorageFullResponseDto getById(@PathVariable final Long id) {
         return storageService.getById(id);
@@ -47,9 +47,9 @@ public class StorageController {
         return storageService.update(dto);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     @Operation(summary = "Отключение склада", description = "Делает склад неактивным")
-    public void disable(@PathVariable Long id) {
+    public void disable(@PathVariable final Long id) {
         storageService.disable(id);
     }
 

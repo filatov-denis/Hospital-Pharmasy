@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserFilter {
+public class UserFilter extends AbstractFilter {
 
     private String username;
 

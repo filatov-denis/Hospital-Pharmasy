@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class StorageFilter {
+public class StorageFilter extends AbstractFilter {
 
     private String name;
 

@@ -7,7 +7,7 @@ import hosp.pharm.back.mapper.UserMapper;
 import hosp.pharm.back.model.dto.auth.AuthenticationDto;
 import hosp.pharm.back.model.dto.auth.JwtAuthenticationDto;
 import hosp.pharm.back.model.entity.UserEntity;
-import hosp.pharm.back.repository.UserRepository;
+import hosp.pharm.back.dao.repository.UserRepository;
 import hosp.pharm.back.service.AuthService;
 import hosp.pharm.back.service.UserService;
 import io.jsonwebtoken.Claims;

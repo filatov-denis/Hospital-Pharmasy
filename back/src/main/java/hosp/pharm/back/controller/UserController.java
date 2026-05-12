@@ -28,9 +28,9 @@ public class UserController {
         return userService.getAll(filter, pageable);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Получить конкретного пользователя", description = "Выводит подробную информацию по конкретному пользователю")
-    public UserResponseDto getById(@PathVariable Long id) {
+    public UserResponseDto getById(@PathVariable final Long id) {
         return userService.getById(id);
     }
 
@@ -46,9 +46,9 @@ public class UserController {
         return userService.update(dto);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     @Operation(summary = "Отключение пользователя", description = "Делает пользователя неактивным")
-    public void disable(@PathVariable Long id) {
+    public void disable(@PathVariable final Long id) {
         userService.disable(id);
     }
 

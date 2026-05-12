@@ -1,5 +1,8 @@
 package hosp.pharm.back.service.impl;
 
+import hosp.pharm.back.dao.repository.StorageRepository;
+import hosp.pharm.back.dao.repository.UserRepository;
+import hosp.pharm.back.dao.selector.UserQuerySelector;
 import hosp.pharm.back.exception.EntityNotFoundException;
 import hosp.pharm.back.exception.NullIdentifierException;
 import hosp.pharm.back.exception.UserAlreadyExistException;
@@ -10,12 +13,11 @@ import hosp.pharm.back.model.dto.response.UserResponseDto;
 import hosp.pharm.back.model.dto.update.UserUpdateDto;
 import hosp.pharm.back.model.entity.StorageEntity;
 import hosp.pharm.back.model.entity.UserEntity;
-import hosp.pharm.back.repository.StorageRepository;
-import hosp.pharm.back.repository.UserRepository;
 import hosp.pharm.back.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +26,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,6 +34,8 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+
+    private final UserQuerySelector querySelector;
 
     private final UserMapper userMapper = UserMapper.INSTANCE;
 
@@ -45,7 +50,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserResponseDto> getAll(final UserFilter filter, final Pageable pageable) {
-        return null;
+        final Page<UserEntity> entities = querySelector.getByDynamicFilter(filter, pageable);
+        final List<UserResponseDto> dtos = entities.get().map(userMapper::toDto).toList();
+        long totalElements = entities.getTotalElements();
+
+        return new PageImpl<>(dtos, pageable, totalElements);
     }
 
     @Override

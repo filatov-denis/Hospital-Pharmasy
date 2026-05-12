@@ -6,7 +6,7 @@ import hosp.pharm.back.filter.CountryFilter;
 import hosp.pharm.back.mapper.CountryMapper;
 import hosp.pharm.back.model.dto.response.CountryResponseDto;
 import hosp.pharm.back.model.entity.CountryEntity;
-import hosp.pharm.back.repository.CountryRepository;
+import hosp.pharm.back.dao.repository.CountryRepository;
 import hosp.pharm.back.service.CountryService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

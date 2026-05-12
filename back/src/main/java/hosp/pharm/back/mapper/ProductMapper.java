@@ -1,5 +1,6 @@
 package hosp.pharm.back.mapper;
 
+import hosp.pharm.back.model.dto.create.ProductCreateDto;
 import hosp.pharm.back.model.dto.response.ProductResponseDto;
 import hosp.pharm.back.model.entity.ProductEntity;
 import org.mapstruct.Mapper;
@@ -11,5 +12,7 @@ public interface ProductMapper {
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
     ProductResponseDto toDto(final ProductEntity entity);
+
+    ProductEntity toEntity(final ProductCreateDto dto);
 
 }

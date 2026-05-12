@@ -35,4 +35,9 @@ public class ProductResponseDto {
     @NotNull(message = "Идентификатор страны производства не может быть пустым")
     private Long countryId;
 
+    @Schema(description = "Наименование страны производства", example = "Ангола")
+    @NotNull(message = "Наименование страны производства не может быть пустым")
+    private Long countryName;
+
+
 }

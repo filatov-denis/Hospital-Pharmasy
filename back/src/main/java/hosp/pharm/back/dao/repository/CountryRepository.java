@@ -1,4 +1,4 @@
-package hosp.pharm.back.repository;
+package hosp.pharm.back.dao.repository;
 
 import hosp.pharm.back.model.entity.CountryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -31,7 +31,7 @@ public class RequestController {
         return requestService.getAll(filter, pageable);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Получить конкретный запрос", description = "Выводит подробную информацию по конкретному запросу")
     public RequestFullResponseDto getById(@PathVariable final Long id) {
         return requestService.getById(id);
@@ -51,7 +51,7 @@ public class RequestController {
 
     @GetMapping("/analytics")
     @Operation(summary = "Аналитика запросов", description = "Выводит аналитику запросов за выбранный период времени")
-    public RequestAnalyticDto analytic(@Valid @RequestBody AnalyticFilter filter) {
+    public RequestAnalyticDto analytic(@Valid @RequestBody final AnalyticFilter filter) {
         return requestService.getAnalytic(filter);
     }
 
