@@ -6,4 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RequestAnalyticDto {
+
+    //todo уточнить требования
+
 }

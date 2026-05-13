@@ -5,7 +5,7 @@ import hosp.pharm.back.constant.ExceptionMessage;
 public class UserAlreadyExistException extends ServiceException {
 
     public UserAlreadyExistException() {
-        super(ExceptionMessage.INVALID_TOKEN.getValue());
+        super(ExceptionMessage.USER_ALREADY_EXIST.getValue());
     }
 
 }

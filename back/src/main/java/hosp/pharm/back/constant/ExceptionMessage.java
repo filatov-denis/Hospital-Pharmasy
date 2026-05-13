@@ -14,8 +14,8 @@ public enum ExceptionMessage {
     NULL_IDENTIFIER("Отсутствует идентификатор"),
     ENTITY_NOT_FOUND("Сущность не найдена"),
     USER_ALREADY_EXIST("Пользователь с таким именем уже существует"),
-//    NEGATIVE_BALANCE("Transfer sum should be lesser than the balance of sender"),
-//    WRONG_EMAIL_DATA_LENGTH("Phone length should be equals or less than 13 symbols"),
+    UNAVAILABLE_BATCH("Невозможно создать данный запрос с выбранной партией"),
+    UNAVAILABLE_STATUS_EXCEPTION("Такой статус сейчас недоступен"),
 //    WRONG_PHONE_DATA_LENGTH("Email length should be equals or less than 200 symbols"),
 //    NEGATIVE_TRANSFER("Transfer sum should be a positive number"),
     UNEXPECTED_ERROR("Произошла непредвиденная ошибка");

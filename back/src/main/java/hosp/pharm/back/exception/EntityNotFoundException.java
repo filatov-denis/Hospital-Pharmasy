@@ -5,7 +5,7 @@ import hosp.pharm.back.constant.ExceptionMessage;
 public class EntityNotFoundException extends ServiceException {
 
     public EntityNotFoundException() {
-        super(ExceptionMessage.INVALID_TOKEN.getValue());
+        super(ExceptionMessage.ENTITY_NOT_FOUND.getValue());
     }
 
 }

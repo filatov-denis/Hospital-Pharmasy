@@ -27,7 +27,7 @@ public class RequestController {
 
     @GetMapping
     @Operation(summary = "Получить запросы", description = "Позволяет получить список запросов по параметрам")
-    public Page<RequestShortResponseDto> getAll(@Valid @RequestBody final RequestFilter filter, final Pageable pageable) {
+    public Page<RequestShortResponseDto> getAll(@Valid final RequestFilter filter, final Pageable pageable) {
         return requestService.getAll(filter, pageable);
     }
 
@@ -51,7 +51,7 @@ public class RequestController {
 
     @GetMapping("/analytics")
     @Operation(summary = "Аналитика запросов", description = "Выводит аналитику запросов за выбранный период времени")
-    public RequestAnalyticDto analytic(@Valid @RequestBody final AnalyticFilter filter) {
+    public RequestAnalyticDto analytic(@Valid final AnalyticFilter filter) {
         return requestService.getAnalytic(filter);
     }
 

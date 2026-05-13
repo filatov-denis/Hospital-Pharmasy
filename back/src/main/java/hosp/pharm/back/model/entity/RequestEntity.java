@@ -18,13 +18,13 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 public class RequestEntity extends AbstractEntity {
 
-    private Long creatorId;
+    //private Long creatorId;
 
     @JoinColumn(name = "creator_id", referencedColumnName = "id")
     @OneToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH}, fetch = FetchType.EAGER)
     private UserEntity creator;
 
-    private Long handlerId;
+    //private Long handlerId;
 
     @JoinColumn(name = "handler_id", referencedColumnName = "id")
     @OneToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH}, fetch = FetchType.EAGER)
@@ -39,5 +39,5 @@ public class RequestEntity extends AbstractEntity {
     private StatusType status;
 
     @CreationTimestamp
-    private LocalDateTime creation_time;
+    private LocalDateTime creationTime;
 }

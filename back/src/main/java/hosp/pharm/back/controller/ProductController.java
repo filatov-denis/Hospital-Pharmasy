@@ -22,7 +22,7 @@ public class ProductController {
 
     @GetMapping
     @Operation(summary = "Получить прдукты", description = "Позволяет получить список продуктов")
-    public Page<ProductResponseDto> getAll(@RequestBody @Valid final ProductFilter filter, final Pageable pageable) {
+    public Page<ProductResponseDto> getAll(@Valid final ProductFilter filter, final Pageable pageable) {
         return productService.getAll(filter, pageable);
     }
 

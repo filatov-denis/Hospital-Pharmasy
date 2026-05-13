@@ -44,6 +44,7 @@ create table request {
 create table batch {
     id bigint primary key,
     count int not null default 0,
+    total_reserved_count int not null default 0,
     active boolean not null default true,
     product_id bigint not null references prooduct(id),
     storage_id bigint not null references storage(id),

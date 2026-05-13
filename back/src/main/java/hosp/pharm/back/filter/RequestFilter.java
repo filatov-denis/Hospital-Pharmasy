@@ -16,10 +16,10 @@ public class RequestFilter extends AbstractFilter {
 
     private StatusType status;
 
-    private LocalDateTime creationDate;
+    private LocalDateTime creationDateFrom;
 
-    private Long batchId;
+    private LocalDateTime creationDateTo;
 
-    private Long productId;
+    private String productName;
 
 }

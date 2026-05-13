@@ -20,7 +20,7 @@ public class ProductQuerySelector extends AbstractQuerySelector<ProductEntity, P
     }
 
     @Override
-    protected List<Predicate> createPredicates(Root<ProductEntity> root, ProductFilter filter) {
+    protected List<Predicate> createPredicates(final Root<ProductEntity> root, final ProductFilter filter) {
         final List<Predicate> predicates = new ArrayList<>();
 
         if(Objects.nonNull(filter.getName())) {
@@ -43,9 +43,7 @@ public class ProductQuerySelector extends AbstractQuerySelector<ProductEntity, P
 
         if(Objects.nonNull(filter.getCountryOfOriginId())) {
             root.join("countryOfOrigin", JoinType.LEFT);
-            predicates.add(criteriaBuilder.equal(
-                    criteriaBuilder.lower(root.get("countryOfOrigin").get("id")), filter.getCountryOfOriginId())
-            );
+            predicates.add(criteriaBuilder.equal(root.get("countryOfOrigin").get("id"), filter.getCountryOfOriginId()));
         }
 
 //        if(Objects.nonNull(filter.getCountryManufactureId())) {

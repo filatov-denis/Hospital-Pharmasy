@@ -24,7 +24,7 @@ public class UserController {
 
     @GetMapping
     @Operation(summary = "Получить пользователей", description = "Позволяет получить информацию о пользователях по нескольким параметрам")
-    public Page<UserResponseDto> getAll(@RequestBody @Valid final UserFilter filter, final Pageable pageable) {
+    public Page<UserResponseDto> getAll(@Valid final UserFilter filter, final Pageable pageable) {
         return userService.getAll(filter, pageable);
     }
 

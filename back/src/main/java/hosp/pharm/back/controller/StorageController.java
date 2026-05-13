@@ -25,7 +25,7 @@ public class StorageController {
 
     @GetMapping
     @Operation(summary = "Получить склады", description = "Позволяет получить список складов")
-    public Page<StorageShortResponseDto> getAll(@RequestBody @Valid final StorageFilter filter, final Pageable pageable) {
+    public Page<StorageShortResponseDto> getAll(@Valid final StorageFilter filter, final Pageable pageable) {
         return storageService.getAll(filter, pageable);
     }
 

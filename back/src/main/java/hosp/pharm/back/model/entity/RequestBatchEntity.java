@@ -31,6 +31,6 @@ public class RequestBatchEntity {
 
     private Integer count;
 
-    private Boolean isDelivering;
+//    private Boolean isDelivering;
 
 }

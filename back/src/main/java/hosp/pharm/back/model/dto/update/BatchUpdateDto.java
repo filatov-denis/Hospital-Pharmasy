@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @Schema(description = "Модель обновления партии")
@@ -15,7 +17,12 @@ public class BatchUpdateDto {
     private Long id;
 
     @Schema(description = "Количество продукта", example = "10")
-    @NotNull(message = "Количество продукта не может быть пустым")
     private Long count;
+
+    @Schema(description = "Дата производства", example = "2025-02-01")
+    private LocalDate manufactureDate;
+
+    @Schema(description = "Дата истечения", example = "2025-02-01")
+    private LocalDate expirationDate;
 
 }
