@@ -1,5 +1,6 @@
 package hosp.pharm.back.mapper;
 
+import hosp.pharm.back.model.dto.create.BatchCreateDto;
 import hosp.pharm.back.model.dto.response.BatchResponseDto;
 import hosp.pharm.back.model.dto.response.RequestBatchResponseDto;
 import hosp.pharm.back.model.entity.BatchEntity;
@@ -10,6 +11,8 @@ import org.mapstruct.factory.Mappers;
 public interface BatchMapper {
 
     BatchMapper INSTANCE = Mappers.getMapper(BatchMapper.class);
+
+    BatchEntity toEntity(final BatchCreateDto dto);
 
     BatchResponseDto toDto(final BatchEntity entity);
 

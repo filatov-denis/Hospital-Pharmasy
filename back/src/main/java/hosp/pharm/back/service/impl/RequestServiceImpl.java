@@ -3,7 +3,6 @@ package hosp.pharm.back.service.impl;
 import hosp.pharm.back.constant.RoleName;
 import hosp.pharm.back.constant.StatusType;
 import hosp.pharm.back.dao.repository.BatchRepository;
-import hosp.pharm.back.dao.repository.RequestBatchRepository;
 import hosp.pharm.back.dao.repository.RequestRepository;
 import hosp.pharm.back.dao.repository.StorageRepository;
 import hosp.pharm.back.dao.selector.RequestQuerySelector;
@@ -26,6 +25,7 @@ import hosp.pharm.back.state.Confirmed;
 import hosp.pharm.back.state.Created;
 import hosp.pharm.back.state.Delivering;
 import hosp.pharm.back.state.RequestState;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -44,8 +44,6 @@ public class RequestServiceImpl implements RequestService {
     private final BatchRepository batchRepository;
 
     private final StorageRepository storageRepository;
-
-    private final RequestBatchRepository requestBatchRepository;
 
     private final UserService userService;
 
@@ -77,16 +75,16 @@ public class RequestServiceImpl implements RequestService {
 
         if (storageId == null) throw new NullIdentifierException();
 
-        final BatchEntity sourceBatch = batchRepository.findById(dto.getSourceBatchId())
+        final BatchEntity sourceBatch = batchRepository.findByIdAndActiveTrue(dto.getSourceBatchId())
                 .orElseThrow(EntityNotFoundException::new);
-        final StorageEntity targetStorage = storageRepository.findById(current.getStorage().getId())
+        final StorageEntity targetStorage = storageRepository.findByIdAndActiveTrue(current.getStorage().getId())
                 .orElseThrow(EntityNotFoundException::new);
 
         if(!sourceBatch.isActive() || sourceBatch.getCount() - sourceBatch.getTotalReservedCount() < dto.getCount()) {
             throw new UnavailableBatchException();
         }
 
-        final Optional<BatchEntity> optionalTarget = batchRepository.findById(dto.getTargetBatchId());
+        final Optional<BatchEntity> optionalTarget = batchRepository.findByIdAndActiveTrue(dto.getTargetBatchId());
 
         final BatchEntity targetBatch = optionalTarget.orElse(new BatchEntity(
                 sourceBatch.getProduct(),
@@ -115,6 +113,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    @Transactional
     public RequestFullResponseDto update(final RequestUpdateDto dto) {
         final RequestEntity entity = getRequestById(dto.getId());
 

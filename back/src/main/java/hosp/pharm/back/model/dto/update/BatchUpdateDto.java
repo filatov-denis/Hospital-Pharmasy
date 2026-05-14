@@ -17,7 +17,7 @@ public class BatchUpdateDto {
     private Long id;
 
     @Schema(description = "Количество продукта", example = "10")
-    private Long count;
+    private Integer count;
 
     @Schema(description = "Дата производства", example = "2025-02-01")
     private LocalDate manufactureDate;

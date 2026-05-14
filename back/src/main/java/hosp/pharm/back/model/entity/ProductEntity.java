@@ -44,6 +44,6 @@ public class ProductEntity extends AbstractEntity {
 
     @JsonManagedReference
     @EqualsAndHashCode.Exclude
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product", fetch = FetchType.LAZY)
     private Set<BatchEntity> batches = new LinkedHashSet<>();
 }

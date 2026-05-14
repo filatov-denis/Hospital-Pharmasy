@@ -32,6 +32,6 @@ public class RequestFullResponseDto {
     @NotNull(message = "Дата создания запроса не может быть пустой")
     private LocalDateTime creationDate;
 
-    private RequestBatchResponseDto batch;
+    private RequestBatchResponseDto requestBatch;
 
 }

@@ -16,8 +16,9 @@ public enum ExceptionMessage {
     USER_ALREADY_EXIST("Пользователь с таким именем уже существует"),
     UNAVAILABLE_BATCH("Невозможно создать данный запрос с выбранной партией"),
     UNAVAILABLE_STATUS_EXCEPTION("Такой статус сейчас недоступен"),
-//    WRONG_PHONE_DATA_LENGTH("Email length should be equals or less than 200 symbols"),
-//    NEGATIVE_TRANSFER("Transfer sum should be a positive number"),
+    NOT_ENOUGH_PRODUCT("Недостаточное количества продукта для выполнения операции"),
+    WRONG_STORAGE_TYPE("Неправильный тип склада"),
+    BATCH_ALREADY_EXPIRED("Партия уже имеет истёкший срок годности"),
     UNEXPECTED_ERROR("Произошла непредвиденная ошибка");
 
     private String value;

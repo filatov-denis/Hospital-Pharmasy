@@ -20,6 +20,7 @@ public class ProductController {
 
     private final ProductService productService;
 
+    //todo добавить везде ограничения роли
     @GetMapping
     @Operation(summary = "Получить прдукты", description = "Позволяет получить список продуктов")
     public Page<ProductResponseDto> getAll(@Valid final ProductFilter filter, final Pageable pageable) {
