@@ -1,11 +1,10 @@
 package hosp.pharm.back.service.impl;
 
+import hosp.pharm.back.constant.RoleName;
 import hosp.pharm.back.dao.repository.StorageRepository;
 import hosp.pharm.back.dao.repository.UserRepository;
 import hosp.pharm.back.dao.selector.UserQuerySelector;
-import hosp.pharm.back.exception.EntityNotFoundException;
-import hosp.pharm.back.exception.NullIdentifierException;
-import hosp.pharm.back.exception.UserAlreadyExistException;
+import hosp.pharm.back.exception.*;
 import hosp.pharm.back.filter.UserFilter;
 import hosp.pharm.back.mapper.UserMapper;
 import hosp.pharm.back.model.dto.create.UserCreateDto;
@@ -27,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -59,6 +59,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto getById(final Long id) {
+        validateUserOperations(id);
+
         return userMapper.toDto(getUserById(id));
     }
 
@@ -69,6 +71,10 @@ public class UserServiceImpl implements UserService {
 
         if (userRepository.findByUsernameAndActiveTrue(entity.getUsername()).isPresent()) {
             throw new UserAlreadyExistException();
+        }
+
+        if(dto.getRole().equals(RoleName.ROLE_ADMIN)) {
+            throw new NotAllowedRoleException();
         }
 
         setStorage(entity, dto.getLinkedStorageId());
@@ -82,6 +88,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponseDto update(final UserUpdateDto dto) {
+        validateUserOperations(dto.getId());
+
         final UserEntity entity = getUserById(dto.getId());
 
         entity.setName(dto.getName());
@@ -124,7 +132,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
-    public void setStorage(final UserEntity entity, final Long storageId) {
+    private void setStorage(final UserEntity entity, final Long storageId) {
         if(storageId != null) {
             final Optional<StorageEntity> optional = storageRepository.findById(storageId);
 
@@ -133,6 +141,14 @@ public class UserServiceImpl implements UserService {
             final StorageEntity storage = optional.get();
             storage.getUsers().add(entity);
             entity.setStorage(storage);
+        }
+    }
+
+    private void validateUserOperations(final Long requestedUserId) {
+        final UserEntity authorized = getCurrentUser();
+
+        if(!authorized.getRole().equals(RoleName.ROLE_ADMIN) && !Objects.equals(authorized.getId(), requestedUserId)) {
+            throw new NotAllowedForUserException();
         }
     }
 

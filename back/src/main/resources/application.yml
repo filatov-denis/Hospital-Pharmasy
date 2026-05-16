@@ -17,6 +17,12 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  jwt:
+    key: ${JWT_KEY}
+    expiration: ${JWT_EXPIRATION}
+#  mvc:
+#    servlet:
+#      path: /api/v1
 logging:
   level:
     org:

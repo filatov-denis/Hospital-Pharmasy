@@ -2,8 +2,8 @@ package hosp.pharm.back.constant;
 
 public enum RoleName {
 
-    ADMIN,
-    PHARMACIST,
-    NURSE
+    ROLE_ADMIN,
+    ROLE_PHARMACIST,
+    ROLE_NURSE
 
 }

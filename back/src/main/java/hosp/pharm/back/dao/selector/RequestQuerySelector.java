@@ -27,7 +27,7 @@ public class RequestQuerySelector extends AbstractQuerySelector<RequestEntity, R
         final List<Predicate> predicates = new ArrayList<>();
 
         final UserEntity current = userService.getCurrentUser();
-        if(current.getRoleName().equals(RoleName.NURSE.name())) {
+        if(current.getRole().equals(RoleName.ROLE_NURSE)) {
             final Join<RequestEntity, UserEntity> creator = root.join("creator", JoinType.LEFT);
             predicates.add(criteriaBuilder.equal(creator.get("id"), current.getId()));
         }

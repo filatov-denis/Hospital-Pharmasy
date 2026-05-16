@@ -24,7 +24,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
-    private final List<RequestMatcher> paths = List.of(PathPatternRequestMatcher.pathPattern("/api/v1/auth/authenticate"),
+    private final List<RequestMatcher> paths = List.of(PathPatternRequestMatcher.pathPattern("/auth/authenticate"),
             PathPatternRequestMatcher.pathPattern("/swagger-ui.html"), PathPatternRequestMatcher.pathPattern("/swagger-ui/**"),
             PathPatternRequestMatcher.pathPattern("/swagger-resources/**"), PathPatternRequestMatcher.pathPattern("/v3/api-docs"),
             PathPatternRequestMatcher.pathPattern("/v3/api-docs/**"));

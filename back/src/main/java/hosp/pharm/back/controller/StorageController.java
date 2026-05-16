@@ -12,42 +12,49 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Validated
+@RestController
 @RequiredArgsConstructor
-@RestController(value = "/storage")
+@RequestMapping("/storage")
 @Tag(name = "Склады", description = "Содержит операции, связанные с настройкой складов")
 public class StorageController {
 
     private final StorageService storageService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST', 'NURSE')")
     @Operation(summary = "Получить склады", description = "Позволяет получить список складов")
     public Page<StorageShortResponseDto> getAll(@Valid final StorageFilter filter, final Pageable pageable) {
         return storageService.getAll(filter, pageable);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST', 'NURSE')")
     @Operation(summary = "Получить конкретный склад", description = "Выводит подробную информацию по конкретному складу")
     public StorageFullResponseDto getById(@PathVariable final Long id) {
         return storageService.getById(id);
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Добавление склада", description = "Позволяет добавить новый склад")
     public StorageFullResponseDto create(@RequestBody @Valid final StorageCreateDto dto) {
         return storageService.create(dto);
     }
 
     @PutMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Обновление информации склада", description = "Позволяет обновить информацию склада")
     public StorageFullResponseDto update(@RequestBody @Valid final StorageUpdateDto dto) {
         return storageService.update(dto);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Отключение склада", description = "Делает склад неактивным")
     public void disable(@PathVariable final Long id) {
         storageService.disable(id);

@@ -28,7 +28,7 @@ public class ProductEntity extends AbstractEntity {
 
     private String description;
 
-    private Boolean active;
+    private Boolean active = true;
 
     private UUID imageId;
 

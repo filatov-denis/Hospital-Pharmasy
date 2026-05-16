@@ -9,14 +9,16 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @Validated
+@RestController
 @RequiredArgsConstructor
-@RestController(value = "/country")
+@RequestMapping("/country")
 @Tag(name = "Страны", description = "Содержит операции для работы со странами")
 public class CountryController {
 
@@ -28,9 +30,9 @@ public class CountryController {
         return countryService.getAll(filter);
     }
 
-    @GetMapping("/id")
+    @GetMapping("/{id}")
     @Operation(summary = "Получить конкретную страну", description = "Выводит информацию о конкретной стране")
-    public CountryResponseDto getById(@RequestParam final Long id) {
+    public CountryResponseDto getById(@PathVariable final Long id) {
         return countryService.getById(id);
     }
 

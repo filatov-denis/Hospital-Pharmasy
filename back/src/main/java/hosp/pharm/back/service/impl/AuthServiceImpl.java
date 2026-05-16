@@ -12,7 +12,6 @@ import hosp.pharm.back.service.AuthService;
 import hosp.pharm.back.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,8 +28,6 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -95,29 +92,20 @@ public class AuthServiceImpl implements AuthService {
 
         final UserEntity user = optional.get();
 
-        if(!user.getPassword().equals(encoder.encode(dto.getPassword()))) throw new InvalidCredentialsException();
+        if(!encoder.matches(dto.getPassword(), user.getPassword())) throw new InvalidCredentialsException();
 
         return new JwtAuthenticationDto(generateToken(userMapper.toAuthUser(user)));
     }
 
-    private String generateToken(final Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration * 1000 * 3600))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
+    private String generateToken(UserDetails userDetails) {
+        return Jwts.builder().subject(userDetails.getUsername())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + jwtExpiration * 1000 * 3600))
+                .signWith(getSigningKey()).compact();
     }
 
     public String extractId(final String token) {
         return extractClaim(token, Claims::getSubject);
-    }
-
-    public String generateToken(final UserDetails userDetails) {
-        final Map<String, Object> claims = new HashMap<>();
-        if (userDetails instanceof UserEntity user) {
-            claims.put("id", user.getId());
-        }
-
-        return generateToken(claims, userDetails);
     }
 
     private Key getSigningKey() {
@@ -128,7 +116,7 @@ public class AuthServiceImpl implements AuthService {
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {
         final Claims claims = Jwts.parser()
                 .setSigningKey(getSigningKey()).build()
-                .parseClaimsJws(token)
+                .parseSignedClaims(token)
                 .getBody();
         return claimsResolvers.apply(claims);
     }

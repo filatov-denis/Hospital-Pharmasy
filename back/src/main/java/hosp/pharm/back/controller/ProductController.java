@@ -11,10 +11,15 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Validated
+@RestController
 @RequiredArgsConstructor
-@RestController(value = "/product")
+@RequestMapping("/product")
+@PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST')")
 @Tag(name = "Продукты", description = "Содержит операции для работы с продуктами")
 public class ProductController {
 
@@ -22,7 +27,7 @@ public class ProductController {
 
     //todo добавить везде ограничения роли
     @GetMapping
-    @Operation(summary = "Получить прдукты", description = "Позволяет получить список продуктов")
+    @Operation(summary = "Получить продукты", description = "Позволяет получить список продуктов")
     public Page<ProductResponseDto> getAll(@Valid final ProductFilter filter, final Pageable pageable) {
         return productService.getAll(filter, pageable);
     }

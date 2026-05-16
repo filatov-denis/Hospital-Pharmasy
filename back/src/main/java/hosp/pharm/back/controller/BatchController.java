@@ -11,42 +11,50 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Validated
+@RestController
 @RequiredArgsConstructor
-@RestController(value = "/batch")
+@RequestMapping("/batch")
+
 @Tag(name = "Партии", description = "Содержит операции, связанные с партиями")
 public class BatchController {
 
     private final BatchService batchService;
 
     @GetMapping("/{storageId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST', 'NURSE')")
     @Operation(summary = "Получить партии", description = "Позволяет получить партии конкретного склада")
     public Page<BatchResponseDto> getAllOfStorage(@PathVariable @NotNull final Long storageId, final Pageable pageable) {
         return batchService.getAll(storageId, pageable);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST', 'NURSE')")
     @Operation(summary = "Получить конкретного партию", description = "Выводит подробную информацию по конкретной партии")
     public BatchResponseDto getById(@PathVariable final Long id) {
         return batchService.getById(id);
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Добавление партии товара", description = "Позволяет добавить нового партию товара")
     public BatchResponseDto create(@RequestBody @Valid final BatchCreateDto dto) {
         return batchService.create(dto);
     }
 
     @PutMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST', 'NURSE')")
     @Operation(summary = "Обновление информации о партии", description = "Позволяет обновить информацию о партии")
     public BatchResponseDto update(@RequestBody @Valid final BatchUpdateDto dto) {
         return batchService.update(dto);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST', 'NURSE')")
     @Operation(summary = "Отключение партии", description = "Делает партию неактивной")
     public void disable(@PathVariable final Long id) {
         batchService.disable(id);

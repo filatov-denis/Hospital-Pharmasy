@@ -69,7 +69,7 @@ public class RequestServiceImpl implements RequestService {
     public RequestFullResponseDto create(final RequestCreateDto dto) {
         final UserEntity current = userService.getCurrentUser();
 
-        final Long storageId = (current.getRoleName().equals(RoleName.NURSE.name()))
+        final Long storageId = (current.getRole().equals(RoleName.ROLE_NURSE))
                 ? current.getStorage().getId()
                 : dto.getTargetStorageId();
 
@@ -146,11 +146,6 @@ public class RequestServiceImpl implements RequestService {
         if(id == null) throw new NullIdentifierException();
 
         return requestRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-    }
-
-    private static class RequestStatus {
-
-
     }
 
 }

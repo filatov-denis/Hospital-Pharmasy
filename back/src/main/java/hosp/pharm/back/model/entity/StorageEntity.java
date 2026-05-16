@@ -20,7 +20,7 @@ public class StorageEntity extends AbstractEntity {
 
     private String name;
 
-    private Boolean active;
+    private Boolean active = true;
 
     private Boolean isPharmacyStorage;
 

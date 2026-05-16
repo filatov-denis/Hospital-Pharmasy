@@ -35,10 +35,10 @@ public class ServiceExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<Object> handleAuthException(RuntimeException ex) {
+    public ResponseEntity<String> handleAuthException(RuntimeException ex) {
         log.error("Exception in authorization process - [{}], message - [{}]", ex.getClass().getName(), ex.getMessage());
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
 }

@@ -1,6 +1,7 @@
 package hosp.pharm.back.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import hosp.pharm.back.constant.RoleName;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user")
+@Table(name = "pharm_user")
 @EqualsAndHashCode(callSuper = true)
 public class UserEntity extends AbstractEntity {
 
@@ -23,12 +24,12 @@ public class UserEntity extends AbstractEntity {
 
     private String lastname;
 
-    private Boolean active;
+    private Boolean active = true;
 
     private String password;
 
     @Enumerated(value = EnumType.STRING)
-    private String roleName;
+    private RoleName role;
 
     @JsonBackReference
     @EqualsAndHashCode.Exclude

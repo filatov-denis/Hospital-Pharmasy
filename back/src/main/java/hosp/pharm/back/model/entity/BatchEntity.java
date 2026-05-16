@@ -8,7 +8,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -34,7 +33,7 @@ public class BatchEntity extends AbstractEntity {
 
     private Integer totalReservedCount;
 
-    private boolean active;
+    private boolean active = true;
 
     private LocalDate manufactureDate;
 
