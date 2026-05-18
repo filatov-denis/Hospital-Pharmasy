@@ -2,6 +2,7 @@ package hosp.pharm.back.model.dto.create;
 
 import hosp.pharm.back.constant.ProductType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +17,7 @@ public class ProductCreateDto {
     private ProductType productType;
 
     @Schema(description = "Наименование продукта", example = "Glicerol")
-    @NotNull(message = "Наименование продукта не может быть пустым")
+    @NotBlank(message = "Наименование продукта не может быть пустым")
     private String name;
 
     @Schema(description = "Описание", example = "Description")

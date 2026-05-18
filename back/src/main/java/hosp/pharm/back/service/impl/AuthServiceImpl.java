@@ -78,26 +78,28 @@ public class AuthServiceImpl implements AuthService {
             context.setAuthentication(authToken);
             SecurityContextHolder.setContext(context);
         } catch (RuntimeException ex) {
-            log.error("Authorization error occured - [{}], [{}]",ex.getClass().getName(), ex.getMessage());
+            log.error("Authorization error occurred - [{}], [{}]",ex.getClass().getName(), ex.getMessage());
             throw new InvalidTokenException();
         }
 
     }
 
     @Override
-    public JwtAuthenticationDto authenticate(AuthenticationDto dto) {
+    public JwtAuthenticationDto authenticate(final AuthenticationDto dto) {
         final Optional<UserEntity> optional = userRepository.findByUsernameAndActiveTrue(dto.getUsername());
 
         if(optional.isEmpty()) throw new InvalidCredentialsException();
 
         final UserEntity user = optional.get();
 
-        if(!encoder.matches(dto.getPassword(), user.getPassword())) throw new InvalidCredentialsException();
+        if(!encoder.matches(dto.getPassword(), user.getPassword()) || !user.getRole().equals(dto.getRole())) {
+            throw new InvalidCredentialsException();
+        }
 
-        return new JwtAuthenticationDto(generateToken(userMapper.toAuthUser(user)));
+        return new JwtAuthenticationDto(generateToken(userMapper.toAuthUser(user)), userMapper.toDto(user));
     }
 
-    private String generateToken(UserDetails userDetails) {
+    private String generateToken(final UserDetails userDetails) {
         return Jwts.builder().subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + jwtExpiration * 1000 * 3600))
@@ -113,7 +115,7 @@ public class AuthServiceImpl implements AuthService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {
+    private <T> T extractClaim(final String token, final Function<Claims, T> claimsResolvers) {
         final Claims claims = Jwts.parser()
                 .setSigningKey(getSigningKey()).build()
                 .parseSignedClaims(token)
@@ -121,7 +123,7 @@ public class AuthServiceImpl implements AuthService {
         return claimsResolvers.apply(claims);
     }
 
-    private boolean isTokenExpired(String token) {
+    private boolean isTokenExpired(final String token) {
         return extractClaim(token, Claims::getExpiration).before(new Date());
     }
 

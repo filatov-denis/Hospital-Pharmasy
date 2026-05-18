@@ -3,11 +3,13 @@ package hosp.pharm.back.dao.selector;
 import hosp.pharm.back.filter.AbstractFilter;
 import hosp.pharm.back.model.entity.AbstractEntity;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -35,12 +37,15 @@ public abstract class AbstractQuerySelector<T extends AbstractEntity, F extends 
         cq.select(root);
         cq.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
         //cq.orderBy(criteriaBuilder.asc(root.get(ID.getValue())));
-
-        List<T> results = results = entityManager.createQuery(cq)
+        TypedQuery<T> query = entityManager.createQuery(cq)
                 .setFirstResult((int) pageable.getOffset())
-                .setHint("jakarta.persistence.fetchgraph", entityManager.getEntityGraph(getFetchGraph()))
-                .setMaxResults(pageable.getPageSize())
-                .getResultList();
+                .setMaxResults(pageable.getPageSize());
+
+        if(StringUtils.isNotEmpty(getFetchGraph())) {
+            query.setHint("jakarta.persistence.fetchgraph", entityManager.getEntityGraph(getFetchGraph()));
+        }
+
+        List<T> results = query.getResultList();
 
         return new PageImpl<>(results, pageable, getCountOfElements(filter));
     }

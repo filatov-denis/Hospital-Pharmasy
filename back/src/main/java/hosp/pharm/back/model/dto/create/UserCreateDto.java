@@ -19,7 +19,7 @@ public class UserCreateDto {
     private String name;
 
     @Schema(description = "Фамилия", example = "Surname")
-    private String surname;
+    private String middlename;
 
     @Schema(description = "Отчество", example = "Lastname")
     private String lastname;

@@ -1,6 +1,5 @@
 package hosp.pharm.back.service;
 
-import hosp.pharm.back.filter.AnalyticFilter;
 import hosp.pharm.back.filter.RequestFilter;
 import hosp.pharm.back.model.dto.analytic.RequestAnalyticDto;
 import hosp.pharm.back.model.dto.create.RequestCreateDto;
@@ -20,6 +19,6 @@ public interface RequestService {
 
     RequestFullResponseDto update(final RequestUpdateDto dto);
 
-    RequestAnalyticDto getAnalytic(final AnalyticFilter filter);
+    RequestAnalyticDto getAnalytic();
 
 }

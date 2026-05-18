@@ -20,6 +20,7 @@ public enum ExceptionMessage {
     NOT_ALLOWED_ROLE("Эта роль надоступна"),
     NOT_ALLOWED_FOR_USER("Операция недоступна для этого пользователя"),
     WRONG_STORAGE_TYPE("Неправильный тип склада"),
+    WRONG_BATCH("Неправильный тип партии для запроса"),
     BATCH_ALREADY_EXPIRED("Партия уже имеет истёкший срок годности"),
     UNEXPECTED_ERROR("Произошла непредвиденная ошибка");
 

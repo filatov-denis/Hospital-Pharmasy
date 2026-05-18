@@ -22,6 +22,8 @@ public class UserQuerySelector extends AbstractQuerySelector<UserEntity, UserFil
     protected List<Predicate> createPredicates(final Root<UserEntity> root, final UserFilter filter) {
         final List<Predicate> predicates = new ArrayList<>();
 
+        predicates.add(criteriaBuilder.equal(root.get("active"), true));
+
         if(Objects.nonNull(filter.getName())) {
             predicates.add(criteriaBuilder.like(
                     criteriaBuilder.lower(root.get("username")), formLikeSentence(filter.getUsername()))

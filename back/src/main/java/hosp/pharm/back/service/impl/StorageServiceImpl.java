@@ -1,6 +1,8 @@
 package hosp.pharm.back.service.impl;
 
+import hosp.pharm.back.constant.RoleName;
 import hosp.pharm.back.exception.EntityNotFoundException;
+import hosp.pharm.back.exception.NotAllowedForUserException;
 import hosp.pharm.back.exception.NullIdentifierException;
 import hosp.pharm.back.filter.StorageFilter;
 import hosp.pharm.back.mapper.StorageMapper;
@@ -11,7 +13,10 @@ import hosp.pharm.back.model.dto.update.StorageUpdateDto;
 import hosp.pharm.back.model.entity.BatchEntity;
 import hosp.pharm.back.model.entity.StorageEntity;
 import hosp.pharm.back.dao.repository.StorageRepository;
+import hosp.pharm.back.model.entity.UserEntity;
 import hosp.pharm.back.service.StorageService;
+import hosp.pharm.back.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -20,12 +25,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class StorageServiceImpl implements StorageService {
 
     private final StorageRepository storageRepository;
+
+    private final UserService userService;
 
     private final StorageMapper storageMapper = StorageMapper.INSTANCE;
 
@@ -34,9 +42,9 @@ public class StorageServiceImpl implements StorageService {
         Page<StorageEntity> entities;
 
         if (StringUtils.isEmpty(filter.getName())) {
-            entities = storageRepository.findByNameContains(filter.getName(), pageable);
+            entities = storageRepository.findByNameContainsAndActiveTrue(filter.getName(), pageable);
         } else {
-            entities = storageRepository.findAll(pageable);
+            entities = storageRepository.findByActiveTrue(pageable);
         }
 
         final List<StorageShortResponseDto> dtos = entities.get().map(storageMapper::toShortDto).toList();
@@ -47,6 +55,12 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public StorageFullResponseDto getById(final Long id) {
+        final UserEntity authorized = userService.getCurrentUser();
+
+        if(authorized.getRole().equals(RoleName.ROLE_NURSE) && !Objects.equals(authorized.getId(), id)) {
+            throw new NotAllowedForUserException();
+        }
+
         final StorageEntity entity = getStorageById(id);
 
         return storageMapper.toFullDto(entity);
@@ -80,10 +94,13 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
+    @Transactional
     public void disable(final Long id) {
         final StorageEntity entity = getStorageById(id);
 
         entity.setActive(false);
+        entity.getBatches().forEach(batch -> batch.setActive(false));
+
         storageRepository.save(entity);
     }
 

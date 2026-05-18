@@ -21,6 +21,8 @@ public class BatchQuerySelector extends AbstractQuerySelector<BatchEntity, Batch
     @Override
     protected List<Predicate> createPredicates(final Root<BatchEntity> root, final BatchFilter filter) {
         final List<Predicate> predicates = new ArrayList<>();
+        predicates.add(criteriaBuilder.equal(root.get("active"), true));
+
         root.join("storage", JoinType.LEFT);
         predicates.add(criteriaBuilder.equal(root.get("storage").get("id"), filter.getStorageId()));
 

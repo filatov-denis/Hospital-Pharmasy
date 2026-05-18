@@ -1,6 +1,7 @@
 package hosp.pharm.back.model.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,11 +29,11 @@ public class RequestBatchResponseDto {
     private LocalDate expirationDate;
 
     @Schema(description = "Наименование склада отправителя", example = "Общий склад")
-    @NotNull(message = "Наименование склада отправителя не может быть пустым")
+    @NotBlank(message = "Наименование склада отправителя не может быть пустым")
     private String sourceStorageName;
 
     @Schema(description = "Наименование склада получателя", example = "Отделение")
-    @NotNull(message = "Наименование склада получателя не может быть пустым")
+    @NotBlank(message = "Наименование склада получателя не может быть пустым")
     private String targetStorageName;
 
 }

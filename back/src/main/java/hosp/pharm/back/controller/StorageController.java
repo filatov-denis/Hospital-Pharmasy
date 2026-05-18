@@ -26,7 +26,7 @@ public class StorageController {
     private final StorageService storageService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST', 'NURSE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST')")
     @Operation(summary = "Получить склады", description = "Позволяет получить список складов")
     public Page<StorageShortResponseDto> getAll(@Valid final StorageFilter filter, final Pageable pageable) {
         return storageService.getAll(filter, pageable);

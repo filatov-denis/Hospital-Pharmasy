@@ -23,6 +23,8 @@ public class ProductQuerySelector extends AbstractQuerySelector<ProductEntity, P
     protected List<Predicate> createPredicates(final Root<ProductEntity> root, final ProductFilter filter) {
         final List<Predicate> predicates = new ArrayList<>();
 
+        predicates.add(criteriaBuilder.equal(root.get("active"), true));
+
         if(Objects.nonNull(filter.getName())) {
             predicates.add(criteriaBuilder.like(
                     criteriaBuilder.lower(root.get("name")), formLikeSentence(filter.getName()))
@@ -30,8 +32,7 @@ public class ProductQuerySelector extends AbstractQuerySelector<ProductEntity, P
         }
 
         if(Objects.nonNull(filter.getProductType())) {
-            predicates.add(criteriaBuilder.equal(
-                    criteriaBuilder.lower(root.get("productType")), filter.getProductType())
+            predicates.add(criteriaBuilder.equal(root.get("productType"), filter.getProductType())
             );
         }
 

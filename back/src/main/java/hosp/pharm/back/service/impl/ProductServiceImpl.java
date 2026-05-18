@@ -13,6 +13,7 @@ import hosp.pharm.back.dao.repository.CountryRepository;
 import hosp.pharm.back.dao.selector.ProductQuerySelector;
 import hosp.pharm.back.dao.repository.ProductRepository;
 import hosp.pharm.back.service.ProductService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -74,10 +75,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public void disable(final Long id) {
         final ProductEntity entity = getProductById(id);
 
         entity.setActive(false);
+        entity.getBatches().forEach(batch -> batch.setActive(false));
+
         productRepository.save(entity);
     }
 

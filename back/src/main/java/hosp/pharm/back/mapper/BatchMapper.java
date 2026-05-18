@@ -5,6 +5,7 @@ import hosp.pharm.back.model.dto.response.BatchResponseDto;
 import hosp.pharm.back.model.dto.response.RequestBatchResponseDto;
 import hosp.pharm.back.model.entity.BatchEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(uses = ProductMapper.class)

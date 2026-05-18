@@ -6,11 +6,7 @@ import hosp.pharm.back.dao.repository.BatchRepository;
 import hosp.pharm.back.dao.repository.RequestRepository;
 import hosp.pharm.back.dao.repository.StorageRepository;
 import hosp.pharm.back.dao.selector.RequestQuerySelector;
-import hosp.pharm.back.exception.EntityNotFoundException;
-import hosp.pharm.back.exception.NullIdentifierException;
-import hosp.pharm.back.exception.UnavailableBatchException;
-import hosp.pharm.back.exception.UnavailableStatusException;
-import hosp.pharm.back.filter.AnalyticFilter;
+import hosp.pharm.back.exception.*;
 import hosp.pharm.back.filter.RequestFilter;
 import hosp.pharm.back.mapper.RequestMapper;
 import hosp.pharm.back.model.dto.analytic.RequestAnalyticDto;
@@ -86,14 +82,7 @@ public class RequestServiceImpl implements RequestService {
 
         final Optional<BatchEntity> optionalTarget = batchRepository.findByIdAndActiveTrue(dto.getTargetBatchId());
 
-        final BatchEntity targetBatch = optionalTarget.orElse(new BatchEntity(
-                sourceBatch.getProduct(),
-                targetStorage,
-                0,
-                0,
-                true,
-                sourceBatch.getManufactureDate(),
-                sourceBatch.getExpirationDate()));
+        final BatchEntity targetBatch = getBatchEntity(optionalTarget, sourceBatch, targetStorage);
 
         final RequestBatchEntity requestBatchEntity = new RequestBatchEntity();
         requestBatchEntity.setSourceBatch(sourceBatch);
@@ -110,6 +99,26 @@ public class RequestServiceImpl implements RequestService {
         final RequestEntity persisted = requestRepository.save(requestEntity);
 
         return requestMapper.toFullDto(persisted);
+    }
+
+    private BatchEntity getBatchEntity(final Optional<BatchEntity> optionalTarget,
+                                       final BatchEntity sourceBatch,
+                                       final StorageEntity targetStorage) {
+        final BatchEntity targetBatch = optionalTarget.orElse(new BatchEntity(
+                sourceBatch.getProduct(),
+                targetStorage,
+                0,
+                0,
+                true,
+                sourceBatch.getManufactureDate(),
+                sourceBatch.getExpirationDate()));
+
+        if(!sourceBatch.getProduct().getId().equals(targetBatch.getProduct().getId())
+                || !sourceBatch.getManufactureDate().equals(targetBatch.getManufactureDate())
+                || !sourceBatch.getExpirationDate().equals(targetBatch.getExpirationDate())
+                || !sourceBatch.isActive()
+                || !targetBatch.isActive()) throw new WrongBatchException();
+        return targetBatch;
     }
 
     @Override
@@ -138,7 +147,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public RequestAnalyticDto getAnalytic(final AnalyticFilter filter) {
+    public RequestAnalyticDto getAnalytic() {
         return null;
     }
 

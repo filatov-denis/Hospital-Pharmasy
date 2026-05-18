@@ -1,0 +1,1 @@
+alter table pharm_user rename surname to middlename;

@@ -1,6 +1,5 @@
 package hosp.pharm.back.controller;
 
-import hosp.pharm.back.filter.AnalyticFilter;
 import hosp.pharm.back.filter.RequestFilter;
 import hosp.pharm.back.model.dto.analytic.RequestAnalyticDto;
 import hosp.pharm.back.model.dto.create.RequestCreateDto;
@@ -55,11 +54,12 @@ public class RequestController {
         return requestService.update(dto);
     }
 
+
     @GetMapping("/analytics")
     @PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST')")
-    @Operation(summary = "Аналитика запросов", description = "Выводит аналитику запросов за выбранный период времени")
-    public RequestAnalyticDto analytic(@Valid final AnalyticFilter filter) {
-        return requestService.getAnalytic(filter);
+    @Operation(summary = "Аналитика запросов", description = "Выводит аналитику запросов за месяц")
+    public RequestAnalyticDto analytic() {
+        return requestService.getAnalytic();
     }
 
 }

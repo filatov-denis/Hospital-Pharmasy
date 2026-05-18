@@ -9,7 +9,9 @@ import java.util.Optional;
 
 public interface StorageRepository extends JpaRepository<StorageEntity, Long> {
 
-    Page<StorageEntity> findByNameContains(final String name, final Pageable pageable);
+    Page<StorageEntity> findByNameContainsAndActiveTrue(final String name, final Pageable pageable);
+
+    Page<StorageEntity> findByActiveTrue(final Pageable pageable);
 
     Optional<StorageEntity> findByIdAndActiveTrue(final Long id);
 

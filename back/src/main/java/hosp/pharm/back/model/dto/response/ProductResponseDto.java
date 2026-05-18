@@ -1,6 +1,7 @@
 package hosp.pharm.back.model.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +16,7 @@ public class ProductResponseDto {
     private Long id;
 
     @Schema(description = "Наименование продукта", example = "Glicerol")
-    @NotNull(message = "Наименование продукта не может быть пустым")
+    @NotBlank(message = "Наименование продукта не может быть пустым")
     private String name;
 
     @Schema(description = "Описание", example = "Description")
@@ -38,6 +39,5 @@ public class ProductResponseDto {
     @Schema(description = "Наименование страны производства", example = "Ангола")
     @NotNull(message = "Наименование страны производства не может быть пустым")
     private Long countryName;
-
 
 }

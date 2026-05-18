@@ -28,6 +28,10 @@ public class RequestQuerySelector extends AbstractQuerySelector<RequestEntity, R
 
         final UserEntity current = userService.getCurrentUser();
         if(current.getRole().equals(RoleName.ROLE_NURSE)) {
+            filter.setCreatorId(current.getId());
+        }
+
+        if(Objects.nonNull(filter.getCreatorId())) {
             final Join<RequestEntity, UserEntity> creator = root.join("creator", JoinType.LEFT);
             predicates.add(criteriaBuilder.equal(creator.get("id"), current.getId()));
         }

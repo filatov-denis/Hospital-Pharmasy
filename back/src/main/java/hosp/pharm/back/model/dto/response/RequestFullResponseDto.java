@@ -2,6 +2,7 @@ package hosp.pharm.back.model.dto.response;
 
 import hosp.pharm.back.constant.StatusType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,7 @@ public class RequestFullResponseDto {
     private Long number;
 
     @Schema(description = "Имя создателя", example = "John Smith")
-    @NotNull(message = "Имя создателя не может быть пустым")
+    @NotBlank(message = "Имя создателя не может быть пустым")
     private String creatorName;
 
     @Schema(description = "Имя обработчика", example = "Anna Smith")
