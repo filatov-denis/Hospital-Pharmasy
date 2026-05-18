@@ -3,6 +3,7 @@ package hosp.pharm.back.model.dto.auth;
 import hosp.pharm.back.constant.RoleName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +23,7 @@ public class AuthenticationDto {
     @NotBlank(message = "Пароль не может быть пустым")
     private String password;
 
-    @NotBlank(message = "Роль не может быть пустой")
+    @NotNull(message = "Роль не может быть пустой")
     @Schema(description = "Роль", allowableValues = {"ROLE_PHARMACIST", "ROLE_NURSE", "ROLE_ADMIN"})
     private RoleName role;
 

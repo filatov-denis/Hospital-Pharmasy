@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum ExceptionMessage {
 
     EXPIRED_TOKEN("Токен истёк"),
-    INVALID_CREDENTIALS("Неправильный логин или пароль"),
+    INVALID_CREDENTIALS("Неправильные данные входа"),
     INVALID_TOKEN("Неправильный токен"),
     MISSING_TOKEN("Токен не найден"),
     NULL_IDENTIFIER("Отсутствует идентификатор"),

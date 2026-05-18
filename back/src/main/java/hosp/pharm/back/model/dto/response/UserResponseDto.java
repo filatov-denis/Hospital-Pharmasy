@@ -30,7 +30,7 @@ public class UserResponseDto {
     private String lastname;
 
     @Schema(description = "Роль", allowableValues = {"ROLE_PHARMACIST", "ROLE_NURSE"})
-    @NotBlank(message = "Роль не может быть пустой")
+    @NotNull(message = "Роль не может быть пустой")
     private RoleName role;
 
     @Schema(description = "Идентификатор склада", example = "2")
