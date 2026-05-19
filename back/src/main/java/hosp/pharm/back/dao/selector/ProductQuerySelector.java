@@ -47,33 +47,6 @@ public class ProductQuerySelector extends AbstractQuerySelector<ProductEntity, P
             predicates.add(criteriaBuilder.equal(root.get("countryOfOrigin").get("id"), filter.getCountryOfOriginId()));
         }
 
-//        if(Objects.nonNull(filter.getCountryManufactureId())) {
-//            root.join(ADDRESS, JoinType.LEFT);
-//            predicates.add(criteriaBuilder.like(
-//                    criteriaBuilder.lower(root.get(ADDRESS).get(COUNTRY)), formLikeSentence(filter.getCountry()))
-//            );
-//        }
-//
-//        if(Objects.nonNull(filter.getAmenities()) && !filter.getAmenities().isEmpty()) {
-//            List<String> likeNames = new ArrayList<>();
-//            for(String amenity : filter.getAmenities()) likeNames.add(amenity.toLowerCase());
-//
-//            Subquery<Long> subquery = query.subquery(Long.class);
-//            Root<Hotel> subHotelRoot = subquery.from(Hotel.class);
-//            Join<Hotel, Amenity> amenityJoin = subHotelRoot.join(AMENITIES);
-//
-//            subquery.select(criteriaBuilder.countDistinct(amenityJoin.get(NAME)))
-//                    .where(
-//                            criteriaBuilder.and(
-//                                    criteriaBuilder.equal(subHotelRoot.get(ID), root.get(ID)),
-//                                    criteriaBuilder.lower(amenityJoin.get(NAME)).in(likeNames)
-//                            )
-//                    )
-//                    .groupBy(subHotelRoot.get(ID));
-//
-//            predicates.add(criteriaBuilder.equal(subquery, (long) filter.getAmenities().size()));
-//        }
-
         return predicates;
     }
 

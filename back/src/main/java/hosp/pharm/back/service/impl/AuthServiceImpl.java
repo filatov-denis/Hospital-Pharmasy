@@ -12,6 +12,7 @@ import hosp.pharm.back.service.AuthService;
 import hosp.pharm.back.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,7 +43,7 @@ public class AuthServiceImpl implements AuthService {
      * Количество часов до истечения токена
      */
     @Value("${spring.jwt.expiration}")
-    private Integer jwtExpiration;
+    private Long jwtExpiration;
 
     private final UserService userService;
 
@@ -101,9 +102,9 @@ public class AuthServiceImpl implements AuthService {
 
     private String generateToken(final UserDetails userDetails) {
         return Jwts.builder().subject(userDetails.getUsername())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + jwtExpiration * 1000 * 3600))
-                .signWith(getSigningKey()).compact();
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration * 1000L * 3600L))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
     }
 
     public String extractId(final String token) {
@@ -118,13 +119,13 @@ public class AuthServiceImpl implements AuthService {
     private <T> T extractClaim(final String token, final Function<Claims, T> claimsResolvers) {
         final Claims claims = Jwts.parser()
                 .setSigningKey(getSigningKey()).build()
-                .parseSignedClaims(token)
+                .parseClaimsJws(token)
                 .getBody();
         return claimsResolvers.apply(claims);
     }
 
     private boolean isTokenExpired(final String token) {
-        return extractClaim(token, Claims::getExpiration).before(new Date());
+        return extractClaim(token, Claims::getExpiration).before(new Date(System.currentTimeMillis()));
     }
 
 }

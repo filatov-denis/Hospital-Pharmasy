@@ -66,6 +66,7 @@ public class ProductServiceImpl implements ProductService {
         setCountryOfOrigin(entity, dto.getCountryId());
 
         if (dto.getName() != null) entity.setName(dto.getName());
+        if (dto.getProductType() != null) entity.setType(dto.getProductType());
         if (dto.getDescription() != null) entity.setDescription(dto.getDescription());
         if (dto.getImageId() != null) entity.setImageId(dto.getImageId());
         if (dto.getIsRequiredRecipe() != null) entity.setIsRequiredRecipe(dto.getIsRequiredRecipe());

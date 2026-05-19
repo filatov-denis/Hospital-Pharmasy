@@ -1,0 +1,1 @@
+alter table request add column if not exists status varchar(100) not null;

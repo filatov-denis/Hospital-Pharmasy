@@ -1,5 +1,6 @@
 package hosp.pharm.back.model.dto.update;
 
+import hosp.pharm.back.constant.ProductType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -15,6 +16,10 @@ public class ProductUpdateDto {
     @Schema(description = "Идентификатор продукта", example = "1008")
     @NotNull(message = "Идентификатор продукта не может быть пустым")
     private Long id;
+
+    @Schema(description = "Тип продукта", example = "SYRUP")
+    @NotNull(message = "Тип продукта не может быть пустым")
+    private ProductType productType;
 
     @Schema(description = "Наименование продукта", example = "Glicerol")
     private String name;

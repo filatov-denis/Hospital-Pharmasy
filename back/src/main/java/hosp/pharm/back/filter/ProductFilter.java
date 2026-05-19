@@ -9,7 +9,7 @@ import lombok.Setter;
 public class ProductFilter extends AbstractFilter {
 
     private String name;
-    //todo allowable values
+
     private ProductType productType;
 
     private Long countryOfOriginId;

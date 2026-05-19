@@ -12,7 +12,7 @@ import lombok.Setter;
 @Schema(description = "Модель создания продукта")
 public class ProductCreateDto {
 
-    @Schema(description = "Тип продукта", example = "NOSE_SPRAY")
+    @Schema(description = "Тип продукта", example = "SYRUP")
     @NotNull(message = "Тип продукта не может быть пустым")
     private ProductType productType;
 
