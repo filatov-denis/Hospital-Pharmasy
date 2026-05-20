@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @Schema(description = "Модель обновления склада")
@@ -18,9 +16,5 @@ public class StorageUpdateDto {
 
     @Schema(description = "Наименование склада", example = "Склад")
     private String name;
-
-    @Schema(description = "Идентификаторы партий склада")
-    @NotNull(message = "Идентификаторы партий склада не могут быть пустыми")
-    private List<Long> batchIds;
 
 }

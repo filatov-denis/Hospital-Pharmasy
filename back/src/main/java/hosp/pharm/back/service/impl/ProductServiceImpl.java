@@ -30,7 +30,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductQuerySelector querySelector;
 
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
     private final ProductMapper productMapper = ProductMapper.INSTANCE;
 

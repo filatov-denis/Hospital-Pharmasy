@@ -37,9 +37,7 @@ public class RequestQuerySelector extends AbstractQuerySelector<RequestEntity, R
         }
 
         if(Objects.nonNull(filter.getStatus())) {
-            predicates.add(criteriaBuilder.equal(
-                    criteriaBuilder.lower(root.get("status")), formLikeSentence(filter.getStatus().name()))
-            );
+            predicates.add(criteriaBuilder.equal(root.get("status"), filter.getStatus().name()));
         }
 
         if(Objects.nonNull(filter.getProductName())) {

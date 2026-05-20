@@ -20,10 +20,6 @@ public class BatchCreateDto {
     @NotNull(message = "Количество продукта не может быть пустым")
     private Integer count;
 
-    @Schema(description = "Идентификатор склада", example = "10")
-    @NotNull(message = "Идентификатор склада не может быть пустой")
-    private Long storageId;
-
     @Schema(description = "Дата производства", example = "2025-02-01")
     @NotNull(message = "Дата производства не может быть пустой")
     private LocalDate manufactureDate;

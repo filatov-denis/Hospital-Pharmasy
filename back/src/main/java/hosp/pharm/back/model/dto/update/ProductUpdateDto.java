@@ -6,8 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Getter
 @Setter
 @Schema(description = "Модель обновления продукта")
@@ -27,8 +25,8 @@ public class ProductUpdateDto {
     @Schema(description = "Описание", example = "Description")
     private String description;
 
-    @Schema(description = "Идентификатор изображения", example = "8123as489a3df0c571")
-    private UUID imageId;
+    @Schema(description = "Идентификатор изображения", example = "AB50C41E-3814-4533-8F68-A691B4DA9043")
+    private String imageId;
 
     @Schema(description = "Необходимость рецепта", allowableValues = {"true", "false"})
     private Boolean isRequiredRecipe;

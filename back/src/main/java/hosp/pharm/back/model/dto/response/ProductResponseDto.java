@@ -27,8 +27,8 @@ public class ProductResponseDto {
     @Schema(description = "Описание", example = "Description")
     private String description;
 
-    @Schema(description = "Идентификатор изображения", example = "8123as489a3df0c571")
-    private String image_id;
+    @Schema(description = "Идентификатор изображения", example = "AB50C41E-3814-4533-8F68-A691B4DA9043")
+    private String imageId;
 
     @Schema(description = "Необходимость рецепта", allowableValues = {"true", "false"})
     @NotNull(message = "Необходимость рецепта не может быть пустой")
@@ -43,6 +43,6 @@ public class ProductResponseDto {
 
     @Schema(description = "Наименование страны производства", example = "Ангола")
     @NotNull(message = "Наименование страны производства не может быть пустым")
-    private Long countryName;
+    private String countryName;
 
 }

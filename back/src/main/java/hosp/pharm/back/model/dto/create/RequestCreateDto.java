@@ -18,7 +18,6 @@ public class RequestCreateDto {
     private Long targetBatchId;
 
     @Schema(description = "Идентификатор склада получателя", example = "3")
-    @NotNull(message = "Идентификатор склада получателя не может быть пустым")
     private Long targetStorageId;
 
     @Schema(description = "Количество продукта", example = "8")

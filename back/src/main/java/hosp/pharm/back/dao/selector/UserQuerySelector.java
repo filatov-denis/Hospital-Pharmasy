@@ -24,15 +24,17 @@ public class UserQuerySelector extends AbstractQuerySelector<UserEntity, UserFil
 
         predicates.add(criteriaBuilder.equal(root.get("active"), true));
 
-        if(Objects.nonNull(filter.getName())) {
+        if(Objects.nonNull(filter.getUsername())) {
             predicates.add(criteriaBuilder.like(
                     criteriaBuilder.lower(root.get("username")), formLikeSentence(filter.getUsername()))
             );
         }
 
         if(Objects.nonNull(filter.getName())) {
-            predicates.add(criteriaBuilder.like(
-                    criteriaBuilder.lower(root.get("name")), formLikeSentence(filter.getName()))
+            predicates.add(criteriaBuilder.or(
+                            criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), formLikeSentence(filter.getName())),
+                            criteriaBuilder.like(criteriaBuilder.lower(root.get("middlename")), formLikeSentence(filter.getName())),
+                            criteriaBuilder.like(criteriaBuilder.lower(root.get("lastname")), formLikeSentence(filter.getName())))
             );
         }
 

@@ -10,9 +10,7 @@ import hosp.pharm.back.model.entity.UserEntity;
 import hosp.pharm.back.dao.repository.UserRepository;
 import hosp.pharm.back.service.AuthService;
 import hosp.pharm.back.service.UserService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
@@ -61,8 +59,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void authorize(final HttpServletRequest request, final HttpServletResponse response, final String token) {
-        if(isTokenExpired(token)) throw new ExpiredTokenException();
-
         try{
             final String id = extractId(token);
 
@@ -78,7 +74,13 @@ public class AuthServiceImpl implements AuthService {
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             context.setAuthentication(authToken);
             SecurityContextHolder.setContext(context);
-        } catch (RuntimeException ex) {
+        } catch(ExpiredJwtException ex) {
+            throw new ExpiredTokenException();
+        }
+        catch (JwtException ex) {
+            throw new InvalidTokenException();
+        }
+        catch (RuntimeException ex) {
             log.error("Authorization error occurred - [{}], [{}]",ex.getClass().getName(), ex.getMessage());
             throw new InvalidTokenException();
         }
@@ -119,13 +121,9 @@ public class AuthServiceImpl implements AuthService {
     private <T> T extractClaim(final String token, final Function<Claims, T> claimsResolvers) {
         final Claims claims = Jwts.parser()
                 .setSigningKey(getSigningKey()).build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
         return claimsResolvers.apply(claims);
-    }
-
-    private boolean isTokenExpired(final String token) {
-        return extractClaim(token, Claims::getExpiration).before(new Date(System.currentTimeMillis()));
     }
 
 }

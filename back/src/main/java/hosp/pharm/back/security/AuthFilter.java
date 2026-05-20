@@ -7,6 +7,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -31,21 +33,34 @@ public class AuthFilter extends OncePerRequestFilter {
 
     private final AuthService authService;
 
+    private final AuthEntryPoint entryPoint;
+
     private final OrRequestMatcher matcher = new OrRequestMatcher(paths);
 
     @Override
     protected void doFilterInternal(final HttpServletRequest request,
                                     final HttpServletResponse response,
                                     final FilterChain filterChain) throws ServletException, IOException {
-        if (!isPermittedPath(request)) {
-            String token = request.getHeader(AUTHORIZATION_HEADER);
+        try {
+            if (!isPermittedPath(request)) {
+                final String header = request.getHeader(AUTHORIZATION_HEADER);
 
-            if(token == null || token.substring(BEARER_PREFIX.length()).isEmpty()) throw new MissingTokenException();
+                if (header == null || !header.startsWith(BEARER_PREFIX)) {
+                    throw new MissingTokenException();
+                }
 
-            authService.authorize(request, response, token.substring(BEARER_PREFIX.length()));
+                final String token = header.substring(BEARER_PREFIX.length());
+
+                authService.authorize(request, response, token);
+            }
+
+            filterChain.doFilter(request, response);
+
+        } catch (AuthenticationException ex) {
+            SecurityContextHolder.clearContext();
+
+            entryPoint.commence(request, response, ex);
         }
-
-        filterChain.doFilter(request, response);
     }
 
     protected boolean isPermittedPath(HttpServletRequest request) {

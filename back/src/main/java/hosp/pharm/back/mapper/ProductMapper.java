@@ -14,8 +14,10 @@ public interface ProductMapper {
 
     @Mapping(target = "countryId", source = "countryOfOrigin.id")
     @Mapping(target = "countryName", source = "countryOfOrigin.name")
+    @Mapping(target = "productType", source = "type")
     ProductResponseDto toDto(final ProductEntity entity);
 
+    @Mapping(target = "type", source = "productType")
     ProductEntity toEntity(final ProductCreateDto dto);
 
 }

@@ -27,13 +27,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BatchServiceImpl implements BatchService {
 
-    private BatchRepository batchRepository;
+    private final BatchRepository batchRepository;
 
-    private StorageRepository storageRepository;
+    private final StorageRepository storageRepository;
 
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    private BatchQuerySelector querySelector;
+    private final BatchQuerySelector querySelector;
 
     private final BatchMapper batchMapper = BatchMapper.INSTANCE;
 
@@ -62,12 +62,8 @@ public class BatchServiceImpl implements BatchService {
 
         final ProductEntity product = productRepository.findByIdAndActiveTrue(dto.getProductId())
                 .orElseThrow(EntityNotFoundException::new);
-        final StorageEntity storage = storageRepository.findByIdAndActiveTrue(dto.getStorageId())
+        final StorageEntity storage = storageRepository.findByIdAndActiveTrue(1L)
                 .orElseThrow(EntityNotFoundException::new);
-
-        if (!storage.getIsPharmacyStorage()) {
-            throw new WrongStorageTypeException();
-        }
 
         batch.setProduct(product);
         batch.setStorage(storage);

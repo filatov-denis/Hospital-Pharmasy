@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Data
 @Entity
@@ -30,7 +29,7 @@ public class ProductEntity extends AbstractEntity {
 
     private Boolean active = true;
 
-    private UUID imageId;
+    private String imageId;
 
     private Boolean isRequiredRecipe;
 
