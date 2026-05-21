@@ -35,9 +35,12 @@ services:
       timeout: 10s
       retries: 3
 
-  hospital-pharmacy-service:
-    container_name: hospital-pharmacy-service
-    image: hospital-pharmacy-service:latest
+  hospital-backend:
+    container_name: hospital-backend
+#    build:
+#      context: ./back
+#      dockerfile: Dockerfile
+    image: hospital-backend:latest
     env_file:
       - .env
     ports:
@@ -47,6 +50,17 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
+
+  hospital-frontend:
+    container_name: hospital-frontend
+#    build:
+#      context: ./front
+#      dockerfile: Dockerfile
+    image: hospital-backend:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - hospital-backend
 
 volumes:
   postgres-data:
