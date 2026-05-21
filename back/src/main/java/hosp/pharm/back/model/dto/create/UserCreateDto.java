@@ -2,7 +2,9 @@ package hosp.pharm.back.model.dto.create;
 
 import hosp.pharm.back.constant.RoleName;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,7 +27,8 @@ public class UserCreateDto {
     private String lastname;
 
     @Schema(description = "Пароль", example = "SomePassword")
-    @NotNull(message = "Пароль не может быть пустым")
+    @Size(min = 8, max = 255, message = "Длина пароля должна быть от 8 до 255 символов")
+    @NotBlank(message = "Пароль не может быть пустым")
     private String password;
 
     @Schema(description = "Роль", allowableValues = {"ROLE_PHARMACIST", "ROLE_NURSE"})

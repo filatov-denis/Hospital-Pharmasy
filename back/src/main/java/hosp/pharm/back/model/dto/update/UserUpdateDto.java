@@ -2,6 +2,7 @@ package hosp.pharm.back.model.dto.update;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,6 +25,7 @@ public class UserUpdateDto {
     private String lastname;
 
     @Schema(description = "Пароль", example = "SomePassword")
+    @Size(min = 8, max = 255, message = "Длина пароля должна быть от 8 до 255 символов")
     private String password;
 
     @Schema(description = "Идентификатор склада", example = "2")
