@@ -56,9 +56,9 @@ services:
 #    build:
 #      context: ./front
 #      dockerfile: Dockerfile
-    image: hospital-backend:latest
+    image: hospital-frontend:latest
     ports:
-      - "3000:3000"
+      - "3000:80"
     depends_on:
       - hospital-backend
 
