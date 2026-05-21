@@ -1,0 +1,3 @@
+[submodule "React-PharmacyFrontend"]
+	path = React-PharmacyFrontend
+	url = https://github.com/A1tor/React-PharmacyFrontend
