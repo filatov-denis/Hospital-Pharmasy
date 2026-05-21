@@ -28,6 +28,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -148,7 +149,11 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public RequestAnalyticDto getAnalytic() {
-        return null;
+        final LocalDateTime startTime = LocalDateTime.now().minusMonths(1);
+        final List<RequestEntity> entities = requestRepository.getAllByCreationTimeAfterOrderByCreationTimeDesc(startTime);
+        final List<RequestShortResponseDto> lines = entities.stream().map(requestMapper::toShortDto).toList();
+
+        return new RequestAnalyticDto(lines);
     }
 
     private RequestEntity getRequestById(final Long id) {
