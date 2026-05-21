@@ -20,9 +20,12 @@ spring:
   jwt:
     key: ${JWT_KEY}
     expiration: ${JWT_EXPIRATION}
-#  mvc:
-#    servlet:
-#      path: /api/v1
+s3:
+  url: ${S3_URL}
+  access-key: ${MINIO_ROOT_USER}
+  secret-key: ${MINIO_ROOT_PASSWORD}
+  bucket: ${MINIO_DEFAULT_BUCKETS}
+  region: ${S3_REGION}
 logging:
   level:
     org:

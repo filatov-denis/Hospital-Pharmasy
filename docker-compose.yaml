@@ -17,19 +17,22 @@ services:
       timeout: 3s
       retries: 3
 
-  redis-db:
-    container_name: redis-db
-    image: redis:latest
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: always
     env_file:
       - .env
     ports:
-      - "6379:6379"
-    restart:
-      on-failure
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    command: [ "server", "--console-address", ":9001", "/data" ]
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
+      test: [ "CMD", "mc", "ready", "local" ]
+      interval: 30s
+      timeout: 10s
       retries: 3
 
   hospital-pharmacy-service:
@@ -42,8 +45,9 @@ services:
     depends_on:
       postgres-db:
         condition: service_healthy
-      redis-db:
+      minio:
         condition: service_healthy
 
 volumes:
   postgres-data:
+  minio-data:
