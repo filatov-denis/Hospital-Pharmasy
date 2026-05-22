@@ -16,6 +16,7 @@ public interface BatchMapper {
 
     BatchEntity toEntity(final BatchCreateDto dto);
 
+    @Mapping(target = "name", source = "id")
     BatchResponseDto toDto(final BatchEntity entity);
 
     @Mapping(target = "product", source = "entity.targetBatch.product")

@@ -6,12 +6,15 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Schema(description = "Модель партии продукта")
 public class BatchResponseDto {
+
+    @Schema(description = "Идентификатор партии", example = "7")
+    @NotNull(message = "Идентификатор партии не может быть пустым")
+    private Long name;
 
     private ProductResponseDto product;
 
