@@ -1,7 +1,13 @@
 cd back
-.\gradlew assemble
+
+call gradlew assemble
+
 docker build -t hospital-backend:latest .
-cd ../front
+
+cd ..\front
+
 docker build -t hospital-frontend:latest .
+
 cd ..
+
 docker-compose up -d
