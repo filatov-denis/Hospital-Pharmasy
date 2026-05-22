@@ -26,9 +26,9 @@ public class RequestEntity extends AbstractEntity {
     @OneToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH}, fetch = FetchType.EAGER)
     private UserEntity handler;
 
-    @MapsId
-    @JoinColumn(name = "id")
-    @OneToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH}, fetch = FetchType.LAZY)
+    @PrimaryKeyJoinColumn
+    @EqualsAndHashCode.Exclude
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH}, fetch = FetchType.LAZY)
     private RequestBatchEntity requestBatch;
 
     @Enumerated(value = EnumType.STRING)

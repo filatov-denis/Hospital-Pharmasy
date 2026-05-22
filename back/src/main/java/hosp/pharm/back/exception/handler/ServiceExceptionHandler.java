@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -29,9 +30,15 @@ public class ServiceExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
         log.error("Unexpected exception occurred - [{}], message - [{}]", ex.getClass().getName(), ex.getMessage());
-        ex.printStackTrace();
         return super.handleExceptionInternal(ex, new Message(UNEXPECTED_ERROR.getValue()),
                 new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    ResponseEntity<Object> handleAuthConflict(RuntimeException ex, WebRequest request) {
+        log.error("Authentication exception occurred - [{}], message - [{}]", ex.getClass().getName(), ex.getMessage());
+        return super.handleExceptionInternal(ex, new Message(ex.getMessage()),
+                new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
     }
 
 }

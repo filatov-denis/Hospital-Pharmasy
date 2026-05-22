@@ -56,6 +56,10 @@ public class BatchServiceImpl implements BatchService {
     public BatchResponseDto create(final BatchCreateDto dto) {
         final BatchEntity batch = batchMapper.toEntity(dto);
 
+        if(dto.getCount() <= 0) {
+            throw new NotEnoughProductException();
+        }
+
         if(dto.getExpirationDate().isBefore(LocalDate.now())) {
             throw new BatchAlreadyExpiredException();
         }
@@ -79,7 +83,7 @@ public class BatchServiceImpl implements BatchService {
         if(dto.getManufactureDate() != null) batch.setManufactureDate(dto.getManufactureDate());
 
         if(dto.getCount() != null) {
-            if(dto.getCount() < 0 || batch.getTotalReservedCount() < dto.getCount()) {
+            if(dto.getCount() < 0 || batch.getTotalReservedCount() > dto.getCount()) {
                 throw new NotEnoughProductException();
             }
             batch.setCount(dto.getCount());

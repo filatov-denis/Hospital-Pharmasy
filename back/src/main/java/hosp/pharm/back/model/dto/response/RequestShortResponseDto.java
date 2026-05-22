@@ -8,8 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -33,7 +31,7 @@ public class RequestShortResponseDto {
 
     @Schema(description = "Дата создания запроса", example = "2025-02-01 10:00:00")
     @NotNull(message = "Дата создания запроса не может быть пустой")
-    private LocalDateTime creationDate;
+    private String creationDate;
 
     @Schema(description = "Наименование продукта", example = "Glicerol")
     @NotBlank(message = "Наименование продукта не может быть пустым")
