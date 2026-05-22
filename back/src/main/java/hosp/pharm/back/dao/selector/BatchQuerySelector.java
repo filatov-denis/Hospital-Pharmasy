@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class BatchQuerySelector extends AbstractQuerySelector<BatchEntity, BatchFilter>{
@@ -23,8 +24,10 @@ public class BatchQuerySelector extends AbstractQuerySelector<BatchEntity, Batch
         final List<Predicate> predicates = new ArrayList<>();
         predicates.add(criteriaBuilder.equal(root.get("active"), true));
 
-        root.join("storage", JoinType.LEFT);
-        predicates.add(criteriaBuilder.equal(root.get("storage").get("id"), filter.getStorageId()));
+        if(Objects.nonNull(filter.getStorageId())) {
+            root.join("storage", JoinType.LEFT);
+            predicates.add(criteriaBuilder.equal(root.get("storage").get("id"), filter.getStorageId()));
+        }
 
         return predicates;
     }
