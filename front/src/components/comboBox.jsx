@@ -1,9 +1,9 @@
 import React from 'react';
 import { getAll } from '../api';
 
-// Reusable typeahead. Two modes:
-//   entity:  loads items from GET /{entity}?name=<query>  (server-filtered)
-//   options: ['VALUE_A', 'VALUE_B', ...]                  (static, client-filtered)
+// Two modes:
+//   entity:  loads items from GET /{entity}?name=<query>  (server-filtered typeahead)
+//   options: ['VALUE_A', 'VALUE_B', ...]                  (static dropdown, not searchable)
 // In both cases the selected id is emitted via onChange. For options mode the id is
 // the raw value; the display label resolves via t.values[value] when available.
 export default function ComboBox({ entity, options, value, onChange, t }) {
@@ -15,15 +15,16 @@ export default function ComboBox({ entity, options, value, onChange, t }) {
 
   // For options mode, pre-build the {id, name} list once.
   const staticItems = React.useMemo(
-    () => options ? options.map(v => ({ id: v, name: (t.values && t.values[v]) || v })) : null,
+    () => options ? options.map(v => ({ id: v, name: (t.values && t.values[String(v)]) || String(v) })) : null,
     [options, t]
   );
+  const isStatic = !!staticItems;
 
   // Resolve display name for a pre-set value (once).
   React.useEffect(() => {
     if (resolved.current || value == null) return;
     resolved.current = true;
-    if (staticItems) {
+    if (isStatic) {
       const sel = staticItems.find(i => i.id === value);
       if (sel) setQuery(sel.name);
       return;
@@ -34,23 +35,20 @@ export default function ComboBox({ entity, options, value, onChange, t }) {
         if (sel) setQuery(sel.name);
       })
       .catch(() => {});
-  }, [value, entity, staticItems]);
+  }, [value, entity, staticItems, isStatic]);
 
-  // Update items while open. Static mode filters locally; entity mode hits the API (debounced).
+  // Update items while open. Static mode shows the full list (no filter).
+  // Entity mode hits the API debounced.
   React.useEffect(() => {
     if (!open) return;
-    if (staticItems) {
-      const q = query.toLowerCase();
-      setItems(staticItems.filter(i => i.name.toLowerCase().includes(q)));
-      return;
-    }
+    if (isStatic) { setItems(staticItems); return; }
     const id = setTimeout(() => {
       getAll(entity, { name: query, page: 0, size: 20 })
         .then(res => setItems(res.content || res || []))
         .catch(() => setItems([]));
     }, 200);
     return () => clearTimeout(id);
-  }, [entity, query, open, staticItems]);
+  }, [entity, query, open, staticItems, isStatic]);
 
   // Close on outside click.
   React.useEffect(() => {
@@ -72,9 +70,11 @@ export default function ComboBox({ entity, options, value, onChange, t }) {
         type="text"
         className="combo-input"
         value={query}
+        readOnly={isStatic}
         onFocus={() => setOpen(true)}
-        onChange={e => { setQuery(e.target.value); setOpen(true); }}
-        placeholder={t.search || ''}
+        onClick={() => isStatic && setOpen(o => !o)}
+        onChange={isStatic ? undefined : (e => { setQuery(e.target.value); setOpen(true); })}
+        placeholder={isStatic ? '' : (t.search || '')}
       />
       <span className="combo-arrow" aria-hidden="true">▾</span>
       {open && (
@@ -82,7 +82,7 @@ export default function ComboBox({ entity, options, value, onChange, t }) {
           {items.length === 0 && <li className="combo-empty">{t.noData}</li>}
           {items.map(item => (
             <li
-              key={item.id}
+              key={String(item.id)}
               className={item.id === value ? 'active' : ''}
               onMouseDown={(e) => { e.preventDefault(); pick(item); }}
             >

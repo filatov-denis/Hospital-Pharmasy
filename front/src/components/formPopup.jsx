@@ -50,12 +50,16 @@ export default function FormPopup({
         />
       );
     }
+    const isNumber = cfg.type === 'number';
     return (
       <input
         id={`f-${k}`}
         type={cfg.type || 'text'}
-        value={values[k] || ''}
-        onChange={e => set(k, e.target.value)}
+        value={values[k] ?? ''}
+        onChange={e => {
+          const v = e.target.value;
+          set(k, isNumber ? (v === '' ? '' : Number(v)) : v);
+        }}
       />
     );
   };

@@ -2,9 +2,9 @@
 // Labels resolve from `t.sections[id]` in languageConstants.
 
 export const SECTIONS_BY_ROLE = {
-  ROLE_ADMIN: ['users', 'storages', 'medications', 'requests', 'reports'],
-  ROLE_PHARMACIST: ['mainStorage', 'deptStorages', 'requests', 'reports'],
-  ROLE_NURSE: ['mainStorage', 'deptStorages', 'myRequests'],
+  ROLE_ADMIN: ['users', 'storages', 'medications', 'batches', 'requests', 'reports'],
+  ROLE_PHARMACIST: ['mainStorage', 'deptStorages', 'batches', 'requests', 'reports'],
+  ROLE_NURSE: ['mainStorage', 'deptStorages', 'batches', 'myRequests'],
 };
 
 // Section -> backend entity name (used with getAll). Sections with no entity
@@ -17,6 +17,7 @@ export const SECTION_ENTITY = {
   mainStorage:  'storage',
   deptStorages: 'storage',
   myRequests:   'request',
+  batches:      'batch',
 };
 
 // Columns per entity (id and image fields excluded). Used to render headers
@@ -27,6 +28,7 @@ export const ENTITY_FIELDS = {
   product: ['name', 'description', 'isRequiredRecipe', 'manufacturer', 'countryName'],
   request: ['number', 'creatorName', 'handlerName', 'status', 'creationDate', 'productName', 'productCount'],
   country: ['name'],
+  batch:   ['product.name', 'count', 'manufactureDate', 'expirationDate'],
 };
 
 // Available filter params per entity (matches *Filter DTOs in the backend).
@@ -43,7 +45,11 @@ export const ENTITY_CREATE_FIELDS = {
   storage: ['name'],
   product: ['name', 'productType', 'description', 'isRequiredRecipe', 'manufacturer', 'countryId'],
   request: ['sourceBatchId', 'targetBatchId', 'targetStorageId', 'count'],
+  batch:   ['productId', 'count', 'manufactureDate', 'expirationDate'],
 };
+
+// Entities that support DELETE /<entity>/{id}. /request and /country are read-only.
+export const ENTITY_DELETABLE = new Set(['user', 'storage', 'product', 'batch']);
 
 // Fields shown in the "Edit" popup per entity (matches *UpdateDto DTOs, minus id).
 export const ENTITY_EDIT_FIELDS = {
@@ -51,6 +57,7 @@ export const ENTITY_EDIT_FIELDS = {
   storage: ['name'],
   product: ['name', 'description', 'isRequiredRecipe', 'manufacturer', 'countryId'],
   request: ['status'],
+  batch:   ['count', 'manufactureDate', 'expirationDate'],
 };
 
 // Hardcoded enum values reused below.
@@ -76,8 +83,15 @@ export const FIELD_CONFIG = {
   linkedStorageId:   { combo: 'storage' },
   targetStorageId:   { combo: 'storage' },
   creatorId:         { combo: 'user' },
+  productId:         { combo: 'product' },
+  sourceBatchId:     { combo: 'batch' },
+  targetBatchId:     { combo: 'batch' },
   creationDateFrom:  { type: 'date' },
   creationDateTo:    { type: 'date' },
+  manufactureDate:   { type: 'date' },
+  expirationDate:    { type: 'date' },
+  count:             { type: 'number' },
   productType:       { options: PRODUCT_TYPES },
-  isRequiredRecipe:       { options: YES_NO },
+  isRequiredRecipe:  { options: YES_NO },
+  isPharmacyStorage: { options: YES_NO },
 };

@@ -227,6 +227,9 @@ a:hover, .link:hover { text-decoration: underline; }
 .popup h2 { margin: 0; font-size: 16px; font-weight: 600; }
 .popup-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
 .popup-error { color: var(--crit); font-size: 13px; background: color-mix(in srgb, var(--crit) 8%, transparent); border: 1px solid color-mix(in srgb, var(--crit) 25%, transparent); border-radius: var(--r); padding: 8px 10px; }
+.popup-message { margin: 0; color: var(--ink-2); font-size: 14px; line-height: 1.5; }
+.btn-danger { background: var(--crit); color: #fff; border-color: var(--crit); }
+.btn-danger:hover { background: color-mix(in srgb, var(--crit) 85%, #000); border-color: color-mix(in srgb, var(--crit) 85%, #000); }
 
 /* ComboBox */
 .combo { position: relative; }
@@ -243,6 +246,7 @@ a:hover, .link:hover { text-decoration: underline; }
 /* Row icon button (edit pencil etc.) */
 .icon-btn { background: transparent; border: 0; padding: 5px 7px; border-radius: 6px; color: var(--ink-3); cursor: pointer; display: inline-grid; place-items: center; }
 .icon-btn:hover { background: var(--bg); color: var(--ink); }
+.icon-btn-danger:hover { background: var(--crit-soft, #fde7ea); color: var(--crit, #b3261e); }
 
 /* Read-only field display inside a popup */
 .field-value { padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r); background: var(--bg); color: var(--ink); min-height: 38px; word-break: break-word; }

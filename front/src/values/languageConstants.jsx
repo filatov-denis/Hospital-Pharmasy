@@ -32,7 +32,7 @@ export const LANG_CONST = {
     // Main screen
     inventory: "Каталог препаратов",
     inventoryHint: "Учёт остатков и сроков годности",
-    search: "Поиск по наименованию, МНН, штрих-коду…",
+    search: "Поиск по имени",
     filters: "Фильтры",
     addItem: "Добавить препарат",
     export: "Экспорт",
@@ -41,7 +41,7 @@ export const LANG_CONST = {
     expiring: "Истекает срок",
     narcotic: "НС и ПВ",
     // Table headers
-    name: "Наименование",
+    name: "Имя",
     inn: "МНН",
     form: "Форма",
     batch: "Серия",
@@ -96,12 +96,13 @@ export const LANG_CONST = {
       mainStorage:  "Основной склад",
       deptStorages: "Склады отделений",
       myRequests:   "Мои запросы",
+      batches:      "Партии",
     },
     // Table column headers — keyed by raw API field name.
     fields: {
       username:          "Логин",
-      name:              "Наименование",
-      middlename:           "Фамилия",
+      name:              "Имя",
+      middlename:        "Фамилия",
       lastname:          "Отчество",
       role:              "Роль",
       linkedStorageId:   "Склад",
@@ -128,6 +129,11 @@ export const LANG_CONST = {
       targetBatchId:     "Партия назначения",
       targetStorageId:   "Склад назначения",
       count:             "Количество",
+      productId:         "Препарат",
+      manufactureDate:   "Дата производства",
+      expirationDate:    "Срок годности",
+      'product.name':    "Препарат",
+      product:           "Препарат",
     },
     // Common backend enum / boolean values.
     values: {
@@ -162,6 +168,9 @@ export const LANG_CONST = {
     edit:    "Редактировать",
     view:    "Просмотр",
     close:   "Закрыть",
+    delete:  "Удалить",
+    confirmDelete: "Удалить эту запись?",
+    noLinkedStorage: "У пользователя не указан склад",
   },
   en: {
     appName: "Hospital Pharmacy",

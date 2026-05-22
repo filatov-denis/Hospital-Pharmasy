@@ -28,17 +28,19 @@ async function apiFetch(path, opts = {}) {
       ...opts.headers,
     },
   });
+  const text = await res.text();
   if (!res.ok) {
     let msg = '';
     try {
-      const body = await res.json();
-      msg = body.message || body.detail || '';
+      const body = text ? JSON.parse(text) : null;
+      msg = (body && (body.message || body.detail)) || '';
     } catch { /* body wasn't JSON */ }
     const err = new Error(msg || `HTTP ${res.status}`);
     err.status = res.status;
     throw err;
   }
-  return res.status === 204 ? null : res.json();
+  // Empty body on 2xx (e.g. DELETE) is fine — return null instead of trying to parse.
+  return text ? JSON.parse(text) : null;
 }
 
 // Flat object -> ?a=1&b=2 (skips null/empty, supports arrays).

@@ -1,20 +1,30 @@
 import React from 'react';
 import '../static/styles.css';
 import Topbar from './topbar';
-import { SECTIONS_BY_ROLE, SECTION_ENTITY, ENTITY_FIELDS, ENTITY_FILTERS, ENTITY_CREATE_FIELDS, ENTITY_EDIT_FIELDS, FIELD_CONFIG } from '../values/sections';
+import { SECTIONS_BY_ROLE, SECTION_ENTITY, ENTITY_FIELDS, ENTITY_FILTERS, ENTITY_CREATE_FIELDS, ENTITY_EDIT_FIELDS, ENTITY_DELETABLE, FIELD_CONFIG } from '../values/sections';
 import { getAll, getOne, send } from '../api';
 import FormPopup from './formPopup';
+import ConfirmPopup from './confirmPopup';
 
 const PROFILE_FIELDS = ['name', 'middlename', 'lastname', 'password'];
 const PROFILE_CONFIG = { ...FIELD_CONFIG, password: { type: 'password' } };
 // Same widget config as filters, plus password masking for the create-user form.
 const CREATE_CONFIG  = { ...FIELD_CONFIG, password: { type: 'password' } };
 
+// Resolve a (possibly dotted) path against an object: 'product.name' -> obj.product?.name
+const getValue = (obj, path) =>
+  path.split('.').reduce((o, k) => (o == null ? o : o[k]), obj);
+
 const cell = (v, t) => {
   if (v == null) return '—';
   if (typeof v === 'object') return JSON.stringify(v);
   return t.values[String(v)] || String(v);
 };
+
+// Some entities don't list under /<entity>; they need a different path.
+// Today only `batch` is special — it lists per storage via /batch/{storageId}.
+const listPathFor = (entity, user) =>
+  entity === 'batch' ? `batch/${user.linkedStorageId ?? ''}` : entity;
 
 export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
   const sections = SECTIONS_BY_ROLE[user.role] || [];
@@ -30,6 +40,7 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
   const [addOpen, setAddOpen] = React.useState(false);
   const [editValues, setEditValues] = React.useState(null);
   const [viewValues, setViewValues] = React.useState(null);
+  const [pendingDelete, setPendingDelete] = React.useState(null);
   const [refresh, setRefresh] = React.useState(0);
 
   const saveProfile = async (values) => {
@@ -63,6 +74,18 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
     }
   };
 
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+    try {
+      await send(entity, 'DELETE', null, pendingDelete.id);
+      setPendingDelete(null);
+      setRefresh(r => r + 1);
+    } catch (e) {
+      setPendingDelete(null);
+      alert(e.message || 'Ошибка');
+    }
+  };
+
   const saveEdit = async (values) => {
     await send(entity, 'PUT', { id: editValues.id, ...values });
     setEditValues(null);
@@ -73,22 +96,27 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
 
   React.useEffect(() => {
     if (!entity) { setRows([]); setStatus(''); return; }
+    if (entity === 'batch' && !user.linkedStorageId) {
+      setRows([]); setStatus(t.noLinkedStorage || 'У пользователя не указан склад');
+      return;
+    }
     let alive = true;
     setStatus('loading');
-    getAll(entity, { page: 0, size: 50, ...filters })
+    getAll(listPathFor(entity, user), { page: 0, size: 50, ...filters })
       .then(res => { if (alive) { setRows(res.content || res || []); setStatus(''); } })
       .catch(err => { if (alive) { setRows([]); setStatus(err.message || 'Ошибка'); } });
     return () => { alive = false; };
-  }, [entity, filters, refresh]);
+  }, [entity, filters, refresh, user, t]);
 
   const cols = ENTITY_FIELDS[entity] || [];
   const filterFields = ENTITY_FILTERS[entity] || [];
   const createFields = ENTITY_CREATE_FIELDS[entity] || [];
   const editFields   = ENTITY_EDIT_FIELDS[entity] || [];
   const editable     = editFields.length > 0;
+  const deletable    = ENTITY_DELETABLE.has(entity);
   const hasActions   = true;   // lens (view) is always available
   const colSpan      = Math.max(cols.length + (hasActions ? 1 : 0), 1);
-  const actionsWidth = editable ? 72 : 36;
+  const actionsWidth = 36 + (editable ? 36 : 0) + (deletable ? 36 : 0);
 
   const fullName = [user.middlename, user.name, user.lastname].filter(Boolean).join(' ');
   const initial = (user.name || user.middlename || '?').charAt(0).toUpperCase();
@@ -156,7 +184,7 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
                 )}
                 {!status && rows.map((row, i) => (
                   <tr key={row.id ?? i}>
-                    {cols.map(c => <td key={c}>{cell(row[c], t)}</td>)}
+                    {cols.map(c => <td key={c}>{cell(getValue(row, c), t)}</td>)}
                     {hasActions && (
                       <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                         <button type="button" className="icon-btn" title={t.view} onClick={() => startView(row)}>
@@ -170,6 +198,15 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
                             <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                               <path d="M11.5 1.5l3 3-9 9H2.5v-3l9-9z"/>
                               <path d="M9.5 3.5l3 3"/>
+                            </svg>
+                          </button>
+                        )}
+                        {deletable && (
+                          <button type="button" className="icon-btn icon-btn-danger" title={t.delete} onClick={() => setPendingDelete(row)}>
+                            <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M3 4h10"/>
+                              <path d="M6 4V2.5h4V4"/>
+                              <path d="M4.5 4l.7 9.5a1 1 0 0 0 1 .9h3.6a1 1 0 0 0 1-.9L11.5 4"/>
                             </svg>
                           </button>
                         )}
@@ -191,7 +228,7 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
           t={t}
           title={t.filters}
           fields={filterFields}
-          initial={filters}
+          initial={{}}
           config={FIELD_CONFIG}
           submitLabel={t.apply}
           onCancel={() => setFilterOpen(false)}
@@ -246,6 +283,18 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
           initial={viewValues}
           readOnly
           onCancel={() => setViewValues(null)}
+        />
+      )}
+
+      {pendingDelete && (
+        <ConfirmPopup
+          title={t.delete}
+          message={t.confirmDelete}
+          confirmLabel={t.delete}
+          cancelLabel={t.cancel}
+          danger
+          onConfirm={confirmDelete}
+          onCancel={() => setPendingDelete(null)}
         />
       )}
     </div>
