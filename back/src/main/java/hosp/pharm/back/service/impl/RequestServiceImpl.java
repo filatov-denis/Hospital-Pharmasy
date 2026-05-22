@@ -63,6 +63,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    @Transactional
     public RequestFullResponseDto create(final RequestCreateDto dto) {
         final UserEntity current = userService.getCurrentUser();
 
@@ -74,14 +75,18 @@ public class RequestServiceImpl implements RequestService {
 
         final BatchEntity sourceBatch = batchRepository.findByIdAndActiveTrue(dto.getSourceBatchId())
                 .orElseThrow(EntityNotFoundException::new);
-        final StorageEntity targetStorage = storageRepository.findByIdAndActiveTrue(current.getStorage().getId())
+        final StorageEntity targetStorage = storageRepository.findByIdAndActiveTrue(storageId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        if(!sourceBatch.isActive() || sourceBatch.getCount() - sourceBatch.getTotalReservedCount() < dto.getCount()) {
+        if (!sourceBatch.isActive() || sourceBatch.getCount() - sourceBatch.getTotalReservedCount() < dto.getCount()) {
             throw new UnavailableBatchException();
         }
 
-        final Optional<BatchEntity> optionalTarget = batchRepository.findByIdAndActiveTrue(dto.getTargetBatchId());
+        Optional<BatchEntity> optionalTarget = Optional.empty();
+
+        if (dto.getTargetBatchId() != null) {
+            optionalTarget = batchRepository.findByIdAndActiveTrue(dto.getTargetBatchId());
+        }
 
         final BatchEntity targetBatch = getBatchEntity(optionalTarget, sourceBatch, targetStorage);
 
@@ -93,13 +98,15 @@ public class RequestServiceImpl implements RequestService {
         final RequestEntity requestEntity = new RequestEntity(
                 current,
                 null,
-                requestBatchEntity,
+                null,
                 StatusType.CREATED,
                 null);
 
         final RequestEntity persisted = requestRepository.save(requestEntity);
+        persisted.setRequestBatch(requestBatchEntity);
+        requestBatchEntity.setRequest(persisted);
 
-        return requestMapper.toFullDto(persisted);
+        return requestMapper.toFullDto(requestRepository.save(persisted));
     }
 
     private BatchEntity getBatchEntity(final Optional<BatchEntity> optionalTarget,

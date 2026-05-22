@@ -31,7 +31,7 @@ public class BatchEntity extends AbstractEntity {
 
     private Integer count;
 
-    private Integer totalReservedCount;
+    private Integer totalReservedCount = 0;
 
     private boolean active = true;
 

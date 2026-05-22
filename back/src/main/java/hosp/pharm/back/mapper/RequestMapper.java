@@ -36,6 +36,8 @@ public interface RequestMapper {
 
 
     default String mapName(final UserEntity user) {
+        if(user == null) return null;
+
         final StringBuilder builder = new StringBuilder();
         final List<String> names = new ArrayList<>();
         if(Objects.nonNull(user.getName())) names.add(user.getName());
