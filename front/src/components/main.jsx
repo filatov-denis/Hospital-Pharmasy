@@ -23,8 +23,6 @@ const cell = (v, t) => {
 
 // Some entities don't list under /<entity>; they need a different path.
 // Today only `batch` is special — it lists per storage via /batch/{storageId}.
-const listPathFor = (entity, user) =>
-  entity === 'batch' ? `batch/${user.linkedStorageId ?? ''}` : entity;
 
 export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
   const sections = SECTIONS_BY_ROLE[user.role] || [];
@@ -96,13 +94,9 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
 
   React.useEffect(() => {
     if (!entity) { setRows([]); setStatus(''); return; }
-    if (entity === 'batch' && !user.linkedStorageId) {
-      setRows([]); setStatus(t.noLinkedStorage || 'У пользователя не указан склад');
-      return;
-    }
     let alive = true;
     setStatus('loading');
-    getAll(listPathFor(entity, user), { page: 0, size: 50, ...filters })
+    getAll(entity, { page: 0, size: 50, ...filters })
       .then(res => { if (alive) { setRows(res.content || res || []); setStatus(''); } })
       .catch(err => { if (alive) { setRows([]); setStatus(err.message || 'Ошибка'); } });
     return () => { alive = false; };
@@ -142,7 +136,7 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
             <div className="avatar" aria-hidden="true">{initial}</div>
             <div className="user-text">
               <div className="user-name">{fullName}</div>
-              <div className="user-role">{user.role}</div>
+              <div className="user-role">{t.values[user.role] || user.role}</div>
             </div>
           </button>
         </div>
