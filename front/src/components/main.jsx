@@ -97,7 +97,11 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
     let alive = true;
     setStatus('loading');
     getAll(entity, { page: 0, size: 50, ...filters })
-      .then(res => { if (alive) { setRows(res.content || res || []); setStatus(''); } })
+      .then(res => {
+        if (!alive) return;
+        const arr = Array.isArray(res) ? res : (res.content || res.lines || []);
+        setRows(arr); setStatus('');
+      })
       .catch(err => { if (alive) { setRows([]); setStatus(err.message || 'Ошибка'); } });
     return () => { alive = false; };
   }, [entity, filters, refresh, user, t]);
@@ -108,7 +112,8 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
   const editFields   = ENTITY_EDIT_FIELDS[entity] || [];
   const editable     = editFields.length > 0;
   const deletable    = ENTITY_DELETABLE.has(entity);
-  const hasActions   = true;   // lens (view) is always available
+  const isAnalytics  = entity === 'request/analytics';
+  const hasActions   = !isAnalytics;   // analytics has no per-row actions
   const colSpan      = Math.max(cols.length + (hasActions ? 1 : 0), 1);
   const actionsWidth = 36 + (editable ? 36 : 0) + (deletable ? 36 : 0);
 
@@ -151,13 +156,16 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
         </header>
 
         <div className="content">
-          {(filterFields.length > 0 || createFields.length > 0) && (
+          {(filterFields.length > 0 || createFields.length > 0 || isAnalytics) && (
             <div style={{ display: 'flex', gap: 8 }}>
               {filterFields.length > 0 && (
                 <button type="button" className="btn btn-ghost" onClick={() => setFilterOpen(true)}>{t.filters}</button>
               )}
               {createFields.length > 0 && (
                 <button type="button" className="btn btn-primary" onClick={() => setAddOpen(true)}>{t.add}</button>
+              )}
+              {isAnalytics && (
+                <button type="button" className="btn btn-primary" onClick={() => { /* TODO: print */ }}>{t.print}</button>
               )}
             </div>
           )}
