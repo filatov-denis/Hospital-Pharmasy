@@ -72,7 +72,9 @@ public class ProductServiceImpl implements ProductService {
         if (dto.getIsRequiredRecipe() != null) entity.setIsRequiredRecipe(dto.getIsRequiredRecipe());
         if (dto.getManufacturer() != null) entity.setManufacturer(dto.getManufacturer());
 
-        return productMapper.toDto(entity);
+        final ProductEntity persisted = productRepository.save(entity);
+
+        return productMapper.toDto(persisted);
     }
 
     @Override
