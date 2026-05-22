@@ -29,8 +29,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -158,15 +158,34 @@ public class RequestServiceImpl implements RequestService {
     public RequestAnalyticDto getAnalytic() {
         final LocalDateTime startTime = LocalDateTime.now().minusMonths(1);
         final List<RequestEntity> entities = requestRepository.getAllByCreationDateAfterOrderByCreationDateDesc(startTime);
-        final List<RequestShortResponseDto> lines = entities.stream().map(requestMapper::toShortDto).toList();
+        final Map<String, Integer> histogramData = new HashMap<>();
 
-        return new RequestAnalyticDto(lines);
+        final List<RequestShortResponseDto> lines = new ArrayList<>();
+
+        for(RequestEntity entity : entities) {
+            final String productName = entity.getRequestBatch().getTargetBatch().getProduct().getName();
+            final Integer entityCount = histogramData.getOrDefault(productName, 0);
+
+            histogramData.put(productName, entityCount);
+            lines.add(requestMapper.toShortDto(entity));
+        }
+
+        final Map<String, Integer> histogram = sortHistogramByValueDescending(histogramData);
+
+        return new RequestAnalyticDto(histogram, lines);
     }
 
     private RequestEntity getRequestById(final Long id) {
         if(id == null) throw new NullIdentifierException();
 
         return requestRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    }
+
+    private Map<String, Integer> sortHistogramByValueDescending(Map<String, Integer> map) {
+        return map.entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
     }
 
 }
