@@ -150,7 +150,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public RequestAnalyticDto getAnalytic() {
         final LocalDateTime startTime = LocalDateTime.now().minusMonths(1);
-        final List<RequestEntity> entities = requestRepository.getAllByCreationTimeAfterOrderByCreationTimeDesc(startTime);
+        final List<RequestEntity> entities = requestRepository.getAllByCreationDateAfterOrderByCreationDateDesc(startTime);
         final List<RequestShortResponseDto> lines = entities.stream().map(requestMapper::toShortDto).toList();
 
         return new RequestAnalyticDto(lines);

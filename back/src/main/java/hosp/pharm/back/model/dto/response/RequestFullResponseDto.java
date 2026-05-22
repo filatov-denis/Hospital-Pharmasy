@@ -31,7 +31,7 @@ public class RequestFullResponseDto {
 
     @Schema(description = "Дата создания запроса", example = "2025-02-01 10:00:00")
     @NotNull(message = "Дата создания запроса не может быть пустой")
-    private LocalDateTime creationTime;
+    private LocalDateTime creationDate;
 
     private RequestBatchResponseDto requestBatch;
 

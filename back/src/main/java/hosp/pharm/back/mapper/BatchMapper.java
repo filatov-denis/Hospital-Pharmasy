@@ -18,6 +18,7 @@ public interface BatchMapper {
 
     BatchResponseDto toDto(final BatchEntity entity);
 
+    @Mapping(target = "product", source = "entity.targetBatch.product")
     @Mapping(target = "manufactureDate", source = "entity.targetBatch.manufactureDate")
     @Mapping(target = "expirationDate", source = "entity.targetBatch.expirationDate")
     @Mapping(target = "sourceStorageName", source = "entity.sourceBatch.storage.name")

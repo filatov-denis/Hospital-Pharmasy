@@ -29,6 +29,7 @@ public interface RequestMapper {
     @Mapping(target = "handlerName", expression = HANDLER_FORMATTED_NAME)
     RequestShortResponseDto toShortDto(final RequestEntity entity);
 
+    @Mapping(target = "number", source = "id")
     @Mapping(target = "creatorName", expression = CREATOR_FORMATTED_NAME)
     @Mapping(target = "handlerName", expression = HANDLER_FORMATTED_NAME)
     RequestFullResponseDto toFullDto(final RequestEntity entity);

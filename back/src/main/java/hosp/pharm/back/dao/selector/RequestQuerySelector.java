@@ -54,7 +54,7 @@ public class RequestQuerySelector extends AbstractQuerySelector<RequestEntity, R
         }
 
         if(Objects.nonNull(filter.getCreationDateFrom())) {
-            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("creationTime"), filter.getCreationDateFrom()));
+            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("creationDate"), filter.getCreationDateFrom()));
         }
 
         if(Objects.nonNull(filter.getCreationDateTo())) {

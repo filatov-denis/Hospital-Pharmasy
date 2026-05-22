@@ -35,5 +35,5 @@ public class RequestEntity extends AbstractEntity {
     private StatusType status;
 
     @CreationTimestamp
-    private LocalDateTime creationTime;
+    private LocalDateTime creationDate;
 }

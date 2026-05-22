@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface RequestRepository extends JpaRepository<RequestEntity, Long> {
 
-    List<RequestEntity> getAllByCreationTimeAfterOrderByCreationTimeDesc(final LocalDateTime creationTimeAfter);
+    List<RequestEntity> getAllByCreationDateAfterOrderByCreationDateDesc(final LocalDateTime creationDateAfter);
 
 }
