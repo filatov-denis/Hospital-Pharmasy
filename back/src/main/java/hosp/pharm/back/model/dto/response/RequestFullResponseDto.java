@@ -7,8 +7,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @Schema(description = "Полная модель запроса")
@@ -31,7 +29,7 @@ public class RequestFullResponseDto {
 
     @Schema(description = "Дата создания запроса", example = "2025-02-01 10:00:00")
     @NotNull(message = "Дата создания запроса не может быть пустой")
-    private LocalDateTime creationDate;
+    private String creationDate;
 
     private RequestBatchResponseDto requestBatch;
 

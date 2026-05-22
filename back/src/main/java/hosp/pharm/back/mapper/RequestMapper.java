@@ -8,6 +8,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -19,6 +21,7 @@ public interface RequestMapper {
 
     String CREATOR_FORMATTED_NAME = "java(mapName(entity.getCreator()))";
 
+    String CREATION_DATE_FORMAT = "java(mapCreationDate(entity.getCreationDate()))";
 
     RequestMapper INSTANCE = Mappers.getMapper(RequestMapper.class);
 
@@ -27,11 +30,13 @@ public interface RequestMapper {
     @Mapping(target = "productCount", source = "entity.requestBatch.count")
     @Mapping(target = "creatorName", expression = CREATOR_FORMATTED_NAME)
     @Mapping(target = "handlerName", expression = HANDLER_FORMATTED_NAME)
+    @Mapping(target = "creationDate", expression = CREATION_DATE_FORMAT)
     RequestShortResponseDto toShortDto(final RequestEntity entity);
 
     @Mapping(target = "number", source = "id")
     @Mapping(target = "creatorName", expression = CREATOR_FORMATTED_NAME)
     @Mapping(target = "handlerName", expression = HANDLER_FORMATTED_NAME)
+    @Mapping(target = "creationDate", expression = CREATION_DATE_FORMAT)
     RequestFullResponseDto toFullDto(final RequestEntity entity);
 
 
@@ -57,6 +62,12 @@ public interface RequestMapper {
         }
 
         return builder.toString();
+    }
+
+    default String mapCreationDate(final LocalDateTime date) {
+        if(date == null) return null;
+
+        return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
 }
