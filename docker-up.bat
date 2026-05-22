@@ -1,5 +1,5 @@
 cd back
-gradle assemble
+.\gradlew assemble
 docker build -t hospital-backend:latest .
 cd ../front
 docker build -t hospital-frontend:latest .
