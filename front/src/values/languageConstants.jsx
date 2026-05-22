@@ -92,11 +92,11 @@ export const LANG_CONST = {
       storages:     "Склады",
       medications:  "База лекарств",
       requests:     "Запросы",
-      reports:      "Отчёты",
       mainStorage:  "Основной склад",
       deptStorages: "Склады отделений",
       myRequests:   "Мои запросы",
       batches:      "Партии",
+      analytics:    "Аналитика",
     },
     // Table column headers — keyed by raw API field name.
     fields: {
@@ -169,6 +169,7 @@ export const LANG_CONST = {
     view:    "Просмотр",
     close:   "Закрыть",
     delete:  "Удалить",
+    print:   "Печать",
     confirmDelete: "Удалить эту запись?",
     noLinkedStorage: "У пользователя не указан склад",
   },

@@ -2,8 +2,8 @@
 // Labels resolve from `t.sections[id]` in languageConstants.
 
 export const SECTIONS_BY_ROLE = {
-  ROLE_ADMIN: ['users', 'storages', 'medications', 'batches', 'requests', 'reports'],
-  ROLE_PHARMACIST: ['mainStorage', 'deptStorages', 'batches', 'requests', 'reports'],
+  ROLE_ADMIN: ['users', 'storages', 'medications', 'batches', 'requests', 'analytics'],
+  ROLE_PHARMACIST: ['mainStorage', 'deptStorages', 'batches', 'requests', 'analytics'],
   ROLE_NURSE: ['mainStorage', 'deptStorages', 'batches', 'myRequests'],
 };
 
@@ -18,6 +18,7 @@ export const SECTION_ENTITY = {
   deptStorages: 'storage',
   myRequests:   'request',
   batches:      'batch',
+  analytics:    'request/analytics',
 };
 
 // Columns per entity (id and image fields excluded). Used to render headers
@@ -29,6 +30,7 @@ export const ENTITY_FIELDS = {
   request: ['number', 'creatorName', 'handlerName', 'status', 'creationDate', 'productName', 'productCount'],
   country: ['name'],
   batch:   ['product.name', 'count', 'manufactureDate', 'expirationDate'],
+  'request/analytics': ['number', 'creatorName', 'handlerName', 'status', 'creationDate', 'productName', 'productCount'],
 };
 
 // Available filter params per entity (matches *Filter DTOs in the backend).
