@@ -38,8 +38,7 @@ public class BatchServiceImpl implements BatchService {
     private final BatchMapper batchMapper = BatchMapper.INSTANCE;
 
     @Override
-    public Page<BatchResponseDto> getAll(final Long storageId, final Pageable pageable) {
-        final BatchFilter filter = new BatchFilter(storageId);
+    public Page<BatchResponseDto> getAll(final BatchFilter filter, final Pageable pageable) {
         final Page<BatchEntity> entities = querySelector.getByDynamicFilter(filter, pageable);
         final List<BatchResponseDto> dtos = entities.get().map(batchMapper::toDto).toList();
         long totalElements = entities.getTotalElements();

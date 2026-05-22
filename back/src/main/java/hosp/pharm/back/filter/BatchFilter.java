@@ -10,4 +10,5 @@ import lombok.Setter;
 public class BatchFilter extends AbstractFilter {
 
     private Long storageId;
+
 }
