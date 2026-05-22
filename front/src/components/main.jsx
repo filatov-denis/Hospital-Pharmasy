@@ -29,6 +29,7 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
   const [profileOpen, setProfileOpen] = React.useState(false);
   const [addOpen, setAddOpen] = React.useState(false);
   const [editValues, setEditValues] = React.useState(null);
+  const [viewValues, setViewValues] = React.useState(null);
   const [refresh, setRefresh] = React.useState(0);
 
   const saveProfile = async (values) => {
@@ -50,6 +51,15 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
       setEditValues({ ...row, ...full });
     } catch (e) {
       alert(e.message || 'Ошибка');         // not a popup-driven action; alert is fine here
+    }
+  };
+
+  const startView = async (row) => {
+    try {
+      const full = await getOne(entity, row.id);
+      setViewValues({ ...row, ...full });
+    } catch (e) {
+      alert(e.message || 'Ошибка');
     }
   };
 
@@ -76,7 +86,9 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
   const createFields = ENTITY_CREATE_FIELDS[entity] || [];
   const editFields   = ENTITY_EDIT_FIELDS[entity] || [];
   const editable     = editFields.length > 0;
-  const colSpan      = Math.max(cols.length + (editable ? 1 : 0), 1);
+  const hasActions   = true;   // lens (view) is always available
+  const colSpan      = Math.max(cols.length + (hasActions ? 1 : 0), 1);
+  const actionsWidth = editable ? 72 : 36;
 
   const fullName = [user.middlename, user.name, user.lastname].filter(Boolean).join(' ');
   const initial = (user.name || user.middlename || '?').charAt(0).toUpperCase();
@@ -133,7 +145,7 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
               <thead>
                 <tr>
                   {cols.map(c => <th key={c}>{t.fields[c] || c}</th>)}
-                  {editable && <th style={{ width: 36 }} aria-label={t.edit}></th>}
+                  {hasActions && <th style={{ width: actionsWidth }}></th>}
                 </tr>
               </thead>
               <tbody>
@@ -145,14 +157,22 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
                 {!status && rows.map((row, i) => (
                   <tr key={row.id ?? i}>
                     {cols.map(c => <td key={c}>{cell(row[c], t)}</td>)}
-                    {editable && (
-                      <td style={{ textAlign: 'right' }}>
-                        <button type="button" className="icon-btn" title={t.edit} onClick={() => startEdit(row)}>
+                    {hasActions && (
+                      <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                        <button type="button" className="icon-btn" title={t.view} onClick={() => startView(row)}>
                           <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M11.5 1.5l3 3-9 9H2.5v-3l9-9z"/>
-                            <path d="M9.5 3.5l3 3"/>
+                            <circle cx="7" cy="7" r="5"/>
+                            <path d="M11 11l3.5 3.5"/>
                           </svg>
                         </button>
+                        {editable && (
+                          <button type="button" className="icon-btn" title={t.edit} onClick={() => startEdit(row)}>
+                            <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M11.5 1.5l3 3-9 9H2.5v-3l9-9z"/>
+                              <path d="M9.5 3.5l3 3"/>
+                            </svg>
+                          </button>
+                        )}
                       </td>
                     )}
                   </tr>
@@ -215,6 +235,17 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
           submitLabel={t.save}
           onCancel={() => setEditValues(null)}
           onApply={saveEdit}
+        />
+      )}
+
+      {viewValues && (
+        <FormPopup
+          t={t}
+          title={t.view}
+          fields={Object.keys(viewValues).filter(k => k !== 'image_id' && k !== 'imageId')}
+          initial={viewValues}
+          readOnly
+          onCancel={() => setViewValues(null)}
         />
       )}
     </div>

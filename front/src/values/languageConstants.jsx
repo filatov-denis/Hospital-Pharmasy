@@ -160,6 +160,8 @@ export const LANG_CONST = {
     save:    "Сохранить",
     add:     "Добавить",
     edit:    "Редактировать",
+    view:    "Просмотр",
+    close:   "Закрыть",
   },
   en: {
     appName: "Hospital Pharmacy",
