@@ -166,7 +166,7 @@ public class RequestServiceImpl implements RequestService {
             final String productName = entity.getRequestBatch().getTargetBatch().getProduct().getName();
             final Integer entityCount = histogramData.getOrDefault(productName, 0);
 
-            histogramData.put(productName, entityCount);
+            histogramData.put(productName, entityCount + 1);
             lines.add(requestMapper.toShortDto(entity));
         }
 
