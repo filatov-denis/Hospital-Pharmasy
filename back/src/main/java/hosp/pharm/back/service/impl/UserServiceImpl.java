@@ -92,9 +92,11 @@ public class UserServiceImpl implements UserService {
 
         final UserEntity entity = getUserById(dto.getId());
 
-        entity.setName(dto.getName());
-        entity.setMiddlename(dto.getMiddlename());
-        entity.setLastname(dto.getLastname());
+        if(Objects.nonNull(entity.getName())) entity.setName(dto.getName());
+        if(Objects.nonNull(entity.getMiddlename())) entity.setMiddlename(dto.getMiddlename());
+        if(Objects.nonNull(entity.getLastname())) entity.setLastname(dto.getLastname());
+        if(Objects.nonNull(entity.getPassword())) entity.setPassword(encoder.encode(dto.getPassword()));
+
         setStorage(entity, dto.getLinkedStorageId());
 
         final UserEntity persisted = userRepository.save(entity);
