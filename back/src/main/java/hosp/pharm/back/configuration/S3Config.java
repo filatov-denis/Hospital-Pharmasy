@@ -1,5 +1,6 @@
 package hosp.pharm.back.configuration;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,6 +8,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 
 import java.net.URI;
 
@@ -18,8 +20,7 @@ public class S3Config {
 
     @Bean
     public S3Client s3Client() {
-
-        return S3Client.builder()
+        final S3Client client = S3Client.builder()
                 .endpointOverride(URI.create(properties.getUrl()))
                 .region(Region.of(properties.getRegion()))
                 .credentialsProvider(
@@ -32,5 +33,25 @@ public class S3Config {
                 )
                 .forcePathStyle(true)
                 .build();
+
+        boolean bucketExists = client.listBuckets()
+                .buckets()
+                .stream()
+                .anyMatch(bucket -> bucket.name().equals(properties.getBucket()));
+
+        if (!bucketExists) {
+            client.createBucket(CreateBucketRequest.builder()
+                    .bucket(properties.getBucket())
+                    .build());
+        }
+
+        return client;
+    }
+
+    @PostConstruct
+    public void init() {
+        System.out.println(properties.getAccessKey());
+        System.out.println(properties.getSecretKey());
+        System.out.println(properties.getUrl());
     }
 }
