@@ -92,10 +92,10 @@ public class UserServiceImpl implements UserService {
 
         final UserEntity entity = getUserById(dto.getId());
 
-        if(Objects.nonNull(entity.getName())) entity.setName(dto.getName());
-        if(Objects.nonNull(entity.getMiddlename())) entity.setMiddlename(dto.getMiddlename());
-        if(Objects.nonNull(entity.getLastname())) entity.setLastname(dto.getLastname());
-        if(Objects.nonNull(entity.getPassword())) entity.setPassword(encoder.encode(dto.getPassword()));
+        if(Objects.nonNull(dto.getName())) entity.setName(dto.getName());
+        if(Objects.nonNull(dto.getMiddlename())) entity.setMiddlename(dto.getMiddlename());
+        if(Objects.nonNull(dto.getLastname())) entity.setLastname(dto.getLastname());
+        if(Objects.nonNull(dto.getPassword())) entity.setPassword(encoder.encode(dto.getPassword()));
 
         setStorage(entity, dto.getLinkedStorageId());
 

@@ -40,7 +40,7 @@ public class BatchController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST')")
     @Operation(summary = "Добавление партии товара", description = "Позволяет добавить нового партию товара")
     public BatchResponseDto create(@RequestBody @Valid final BatchCreateDto dto) {
         return batchService.create(dto);
