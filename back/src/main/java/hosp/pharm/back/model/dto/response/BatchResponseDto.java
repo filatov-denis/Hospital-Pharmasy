@@ -14,7 +14,7 @@ public class BatchResponseDto {
 
     @Schema(description = "Идентификатор партии", example = "7")
     @NotNull(message = "Идентификатор партии не может быть пустым")
-    private Long name;
+    private Long id;
 
     private ProductResponseDto product;
 
