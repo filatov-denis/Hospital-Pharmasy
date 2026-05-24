@@ -226,6 +226,13 @@ a:hover, .link:hover { text-decoration: underline; }
 .popup { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px; min-width: 320px; max-width: 90vw; max-height: 90vh; overflow: auto; display: flex; flex-direction: column; gap: 12px; }
 .popup h2 { margin: 0; font-size: 16px; font-weight: 600; }
 .popup-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+.popup-fields { display: flex; flex-direction: column; gap: 12px; }
+.popup-wide { width: 640px; max-width: 90vw; }
+.popup-wide .popup-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px 16px;
+}
 .popup-error { color: var(--crit); font-size: 13px; background: color-mix(in srgb, var(--crit) 8%, transparent); border: 1px solid color-mix(in srgb, var(--crit) 25%, transparent); border-radius: var(--r); padding: 8px 10px; }
 .popup-message { margin: 0; color: var(--ink-2); font-size: 14px; line-height: 1.5; }
 .btn-danger { background: var(--crit); color: #fff; border-color: var(--crit); }

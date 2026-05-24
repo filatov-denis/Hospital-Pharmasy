@@ -24,6 +24,13 @@ const STATUS_TRANSITIONS = {
 const getValue = (obj, path) =>
   path.split('.').reduce((o, k) => (o == null ? o : o[k]), obj);
 
+// For sections that don't list under the default /<entity> URL.
+// deptStorages -> GET /storage/{user.linkedStorageId}  (single-object response, wrapped to 1 row)
+const listPathFor = (activeId, entity, user) => {
+  if (activeId === 'deptStorages') return `storage/${user.linkedStorageId ?? ''}`;
+  return entity;
+};
+
 // Flatten nested objects into a single-level map keyed by dotted paths.
 // { count: 13, product: { name: 'X' } } -> { count: 13, 'product.name': 'X' }
 // Arrays and primitives are kept as-is.
@@ -116,19 +123,30 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
 
   React.useEffect(() => {
     if (!entity) { setRows([]); setStatus(''); return; }
+    if (active === 'deptStorages' && !user.linkedStorageId) {
+      setRows([]); setHistogram(null);
+      setStatus(t.noLinkedStorage);
+      return;
+    }
     let alive = true;
     setStatus('loading');
-    getAll(entity, { page: 0, size: 50, ...filters })
+    getAll(listPathFor(active, entity, user), { page: 0, size: 50, ...filters })
       .then(res => {
         if (!alive) return;
-        const arr = Array.isArray(res) ? res : (res.content || res.lines || []);
+        let arr;
+        if (!res) arr = [];
+        else if (Array.isArray(res)) arr = res;
+        else if (res.content) arr = res.content;
+        else if (res.lines) arr = res.lines;
+        else if (typeof res === 'object') arr = [res];   // single object (e.g. GET /storage/{id})
+        else arr = [];
         setRows(arr);
         setHistogram(res && !Array.isArray(res) ? (res.histogram || null) : null);
         setStatus('');
       })
       .catch(err => { if (alive) { setRows([]); setHistogram(null); setStatus(err.message || 'Ошибка'); } });
     return () => { alive = false; };
-  }, [entity, filters, refresh, user, t]);
+  }, [active, entity, filters, refresh, user, t]);
 
   const cols = ENTITY_FIELDS[entity] || [];
   const filterFields = ENTITY_FILTERS[entity] || [];

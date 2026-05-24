@@ -64,16 +64,20 @@ export default function FormPopup({
     );
   };
 
+  const wide = fields.length > 4;
+
   return (
     <div className="popup-scrim" onClick={onCancel}>
-      <div className="popup" onClick={e => e.stopPropagation()}>
+      <div className={`popup ${wide ? 'popup-wide' : ''}`} onClick={e => e.stopPropagation()}>
         <h2>{title}</h2>
-        {fields.map(k => (
-          <div key={k} className="field">
-            <label htmlFor={`f-${k}`}>{t.fields[k] || t.fields[k.split('.').pop()] || k}</label>
-            {renderField(k)}
-          </div>
-        ))}
+        <div className="popup-fields">
+          {fields.map(k => (
+            <div key={k} className="field">
+              <label htmlFor={`f-${k}`}>{t.fields[k] || t.fields[k.split('.').pop()] || k}</label>
+              {renderField(k)}
+            </div>
+          ))}
+        </div>
         {error && <div className="popup-error" role="alert">{error}</div>}
         <div className="popup-actions">
           <button type="button" className="btn btn-ghost" onClick={onCancel} disabled={busy}>

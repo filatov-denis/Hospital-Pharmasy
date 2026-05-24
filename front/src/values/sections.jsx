@@ -4,7 +4,7 @@
 export const SECTIONS_BY_ROLE = {
   ROLE_ADMIN: ['users', 'storages', 'medications', 'batches', 'requests', 'analytics'],
   ROLE_PHARMACIST: ['mainStorage', 'deptStorages', 'batches', 'requests', 'analytics'],
-  ROLE_NURSE: ['mainStorage', 'deptStorages', 'batches', 'myRequests'],
+  ROLE_NURSE: ['deptStorages', 'batches', 'myRequests'],
 };
 
 // Section -> backend entity name (used with getAll). Sections with no entity
