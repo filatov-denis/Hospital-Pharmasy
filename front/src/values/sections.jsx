@@ -92,6 +92,12 @@ const YES_NO = [
   true, false
 ];
 
+const ROLES = [
+  'ROLE_ADMIN',
+  'ROLE_PHARMACIST',
+  'ROLE_NURSE'
+]
+
 // Per-field widget config. Used by both filter and edit popups.
 //   { combo: 'country' }       -> ComboBox loading from GET /country?name=...
 //   { options: [...] }         -> ComboBox with hardcoded values
@@ -115,4 +121,5 @@ export const FIELD_CONFIG = {
   productType:       { options: PRODUCT_TYPES },
   isRequiredRecipe:  { options: YES_NO },
   isPharmacyStorage: { options: YES_NO },
+  role:              { options: ROLES}
 };
