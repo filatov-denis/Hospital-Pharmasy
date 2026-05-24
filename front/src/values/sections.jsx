@@ -72,6 +72,20 @@ export const ENTITY_PERMISSIONS = {
 export const canDo = (entity, action, role) =>
   ((ENTITY_PERMISSIONS[entity] && ENTITY_PERMISSIONS[entity][action]) || []).includes(role);
 
+// Entities whose ComboBox behaves like a static dropdown:
+// no search input, no query filter — every option is always visible.
+// (Backend list is fetched once when the popup opens.)
+export const ENTITY_DROPDOWN = new Set(['batch']);
+
+// Per-entity display formatter used by ComboBox when the raw `name` field
+// isn't enough. Each function receives the full item from /<entity> and
+// returns the string shown in the dropdown / selected display.
+export const ENTITY_LABEL = {
+  batch: (item) => [item.product && item.id, item.product.name, item.manufactureDate, item.count]
+    .filter(v => v != null && v !== '')
+    .join(' • '),
+};
+
 // Fields shown in the "Edit" popup per entity (matches *UpdateDto DTOs, minus id).
 export const ENTITY_EDIT_FIELDS = {
   user:    ['name', 'middlename', 'lastname', 'password', 'linkedStorageId'],

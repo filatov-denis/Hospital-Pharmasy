@@ -1,5 +1,6 @@
 import React from 'react';
 import { getAll } from '../api';
+import { ENTITY_LABEL, ENTITY_DROPDOWN } from '../values/sections';
 
 // Two modes:
 //   entity:  loads items from GET /{entity}?name=<query>  (server-filtered typeahead)
@@ -19,6 +20,16 @@ export default function ComboBox({ entity, options, value, onChange, t }) {
     [options, t]
   );
   const isStatic = !!staticItems;
+  // Entity-backed but should behave like a static dropdown (no search, always full list).
+  const isDropdown = !!(entity && ENTITY_DROPDOWN.has(entity));
+  const noSearch = isStatic || isDropdown;
+
+  // Optionally override how an entity-mode item is displayed
+  // (e.g. batch: "Glicerol • 2026-05-19 • 13" instead of the raw id).
+  const formatItem = React.useCallback(
+    (item) => (entity && ENTITY_LABEL[entity]) ? { ...item, name: ENTITY_LABEL[entity](item) } : item,
+    [entity]
+  );
 
   // Resolve display name for a pre-set value (once).
   React.useEffect(() => {
@@ -31,24 +42,25 @@ export default function ComboBox({ entity, options, value, onChange, t }) {
     }
     getAll(entity, { page: 0, size: 50 })
       .then(res => {
-        const sel = (res.content || res || []).find(i => i.id === value);
+        const sel = (res.content || res || []).map(formatItem).find(i => i.id === value);
         if (sel) setQuery(sel.name);
       })
       .catch(() => {});
-  }, [value, entity, staticItems, isStatic]);
+  }, [value, entity, staticItems, isStatic, formatItem]);
 
   // Update items while open. Static mode shows the full list (no filter).
   // Entity mode hits the API debounced.
   React.useEffect(() => {
     if (!open) return;
     if (isStatic) { setItems(staticItems); return; }
+    const params = isDropdown ? { page: 0, size: 50 } : { name: query, page: 0, size: 20 };
     const id = setTimeout(() => {
-      getAll(entity, { name: query, page: 0, size: 20 })
-        .then(res => setItems(res.content || res || []))
+      getAll(entity, params)
+        .then(res => setItems((res.content || res || []).map(formatItem)))
         .catch(() => setItems([]));
     }, 200);
     return () => clearTimeout(id);
-  }, [entity, query, open, staticItems, isStatic]);
+  }, [entity, query, open, staticItems, isStatic, isDropdown, formatItem]);
 
   // Close on outside click.
   React.useEffect(() => {
@@ -70,11 +82,11 @@ export default function ComboBox({ entity, options, value, onChange, t }) {
         type="text"
         className="combo-input"
         value={query}
-        readOnly={isStatic}
+        readOnly={noSearch}
         onFocus={() => setOpen(true)}
-        onClick={() => isStatic && setOpen(o => !o)}
-        onChange={isStatic ? undefined : (e => { setQuery(e.target.value); setOpen(true); })}
-        placeholder={isStatic ? '' : (t.search || '')}
+        onClick={() => noSearch && setOpen(o => !o)}
+        onChange={noSearch ? undefined : (e => { setQuery(e.target.value); setOpen(true); })}
+        placeholder={noSearch ? '' : (t.search || '')}
       />
       <svg className="combo-arrow" aria-hidden="true" viewBox="0 0 10 6" width="10" height="6">
         <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
