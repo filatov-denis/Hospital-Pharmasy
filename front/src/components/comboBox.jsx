@@ -59,7 +59,7 @@ export default function ComboBox({ entity, options, value, onChange, t }) {
   }, [open]);
 
   const pick = (item) => {
-    onChange(item.id || item.name);
+    onChange(item.id ?? item.name);
     setQuery(item.name);
     setOpen(false);
   };
@@ -87,7 +87,7 @@ export default function ComboBox({ entity, options, value, onChange, t }) {
               key={String(item.id)}
               onMouseDown={(e) => { e.preventDefault(); pick(item); }}
             >
-              {item.name || item.id}
+              {item.name ?? String(item.id)}
             </li>
           ))}
         </ul>

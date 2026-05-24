@@ -31,6 +31,8 @@ const flatten = (obj, prefix = '') => {
   const out = {};
   for (const [k, v] of Object.entries(obj || {})) {
     const key = prefix ? `${prefix}.${k}` : k;
+    if (key === 'product.id')
+      continue;
     if (v && typeof v === 'object' && !Array.isArray(v)) Object.assign(out, flatten(v, key));
     else out[key] = v;
   }

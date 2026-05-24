@@ -30,7 +30,7 @@ export const ENTITY_FIELDS = {
   request: ['id', 'creatorName', 'handlerName', 'status', 'creationDate', 'productName', 'productCount'],
   country: ['name'],
   batch:   ['id', 'product.name', 'count', 'manufactureDate', 'expirationDate'],
-  'request/analytics': ['number', 'creatorName', 'handlerName', 'status', 'creationDate', 'productName', 'productCount'],
+  'request/analytics': ['creatorName', 'handlerName', 'status', 'creationDate', 'productName', 'productCount'],
 };
 
 // Available filter params per entity (matches *Filter DTOs in the backend).
@@ -39,6 +39,7 @@ export const ENTITY_FILTERS = {
   storage: ['name'],
   product: ['name', 'productType', 'countryOfOriginId', 'manufacturer'],
   request: ['creatorId', 'status', 'creationDateFrom', 'creationDateTo', 'productName'],
+  batch:   ['count', 'manufactureDate', 'expirationDate'],
 };
 
 // Fields shown in the "Add" popup per entity (matches *CreateDto DTOs).
@@ -47,7 +48,7 @@ export const ENTITY_CREATE_FIELDS = {
   storage: ['name'],
   product: ['name', 'productType', 'description', 'isRequiredRecipe', 'manufacturer', 'countryId'],
   request: ['sourceBatchId', 'targetBatchId', 'targetStorageId', 'count'],
-  batch:   ['productId', 'count', 'manufactureDate', 'expirationDate'],
+  batch:   ['count', 'manufactureDate', 'expirationDate'],
 };
 
 // Entities that support DELETE /<entity>/{id}. /request and /country are read-only.
@@ -61,11 +62,11 @@ export const ENTITY_DELETABLE = new Set(['user', 'storage', 'product', 'batch'])
 //   delete: shown via the trash icon / DELETE
 // Edit this map to change who can do what — no component changes needed.
 export const ENTITY_PERMISSIONS = {
-  user:    { create: ['ROLE_ADMIN'],                                edit: ['ROLE_ADMIN'],                                delete: ['ROLE_ADMIN'] },
-  storage: { create: ['ROLE_ADMIN'],                                edit: ['ROLE_ADMIN'],             delete: ['ROLE_ADMIN'] },
-  product: { create: ['ROLE_ADMIN', 'ROLE_PHARMACIST'],             edit: ['ROLE_ADMIN', 'ROLE_PHARMACIST'],             delete: ['ROLE_ADMIN', 'ROLE_PHARMACIST'] },
-  request: { create: ['ROLE_ADMIN', 'ROLE_NURSE'],                  edit: ['ROLE_ADMIN', 'ROLE_ADMIN', 'ROLE_PHARMACIST'],             delete: ['ROLE_ADMIN'] },
-  batch:   { create: ['ROLE_ADMIN', 'ROLE_PHARMACIST'],             edit: ['ROLE_ADMIN', 'ROLE_PHARMACIST'],             delete: ['ROLE_ADMIN', 'ROLE_PHARMACIST'] },
+  user:    { create: ['ROLE_ADMIN'],                                edit: ['ROLE_ADMIN'],                                  delete: ['ROLE_ADMIN'] },
+  storage: { create: ['ROLE_ADMIN'],                                edit: ['ROLE_ADMIN'],                                  delete: ['ROLE_ADMIN'] },
+  product: { create: ['ROLE_ADMIN', 'ROLE_PHARMACIST'],             edit: ['ROLE_ADMIN', 'ROLE_PHARMACIST'],               delete: ['ROLE_ADMIN', 'ROLE_PHARMACIST'] },
+  request: { create: ['ROLE_ADMIN', 'ROLE_NURSE'],                  edit: ['ROLE_ADMIN', 'ROLE_ADMIN', 'ROLE_PHARMACIST'], delete: ['ROLE_ADMIN'] },
+  batch:   { create: ['ROLE_ADMIN', 'ROLE_PHARMACIST'],             edit: ['ROLE_ADMIN', 'ROLE_PHARMACIST'],               delete: ['ROLE_ADMIN', 'ROLE_PHARMACIST'] },
 };
 
 export const canDo = (entity, action, role) =>
