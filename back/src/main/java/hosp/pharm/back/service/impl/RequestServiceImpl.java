@@ -78,17 +78,17 @@ public class RequestServiceImpl implements RequestService {
         final StorageEntity targetStorage = storageRepository.findByIdAndActiveTrue(storageId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        if (!sourceBatch.isActive() || sourceBatch.getCount() - sourceBatch.getTotalReservedCount() < dto.getCount()) {
+        if (!sourceBatch.isActive()) {
             throw new UnavailableBatchException();
         }
 
-        Optional<BatchEntity> optionalTarget = Optional.empty();
-
-        if (dto.getTargetBatchId() != null) {
-            optionalTarget = batchRepository.findByIdAndActiveTrue(dto.getTargetBatchId());
+        if (sourceBatch.getCount() - sourceBatch.getTotalReservedCount() < dto.getCount()) {
+            throw new NotEnoughProductException();
         }
 
-        final BatchEntity targetBatch = getBatchEntity(optionalTarget, sourceBatch, targetStorage);
+        sourceBatch.setTotalReservedCount(sourceBatch.getTotalReservedCount() + dto.getCount());
+
+        final BatchEntity targetBatch = findBatchEntity(dto.getTargetBatchId(), sourceBatch, targetStorage);
 
         final RequestBatchEntity requestBatchEntity = new RequestBatchEntity();
         requestBatchEntity.setSourceBatch(sourceBatch);
@@ -109,9 +109,28 @@ public class RequestServiceImpl implements RequestService {
         return requestMapper.toFullDto(requestRepository.save(persisted));
     }
 
-    private BatchEntity getBatchEntity(final Optional<BatchEntity> optionalTarget,
-                                       final BatchEntity sourceBatch,
-                                       final StorageEntity targetStorage) {
+    private BatchEntity findBatchEntity(final Long targetBatchId,
+                                        final BatchEntity sourceBatch,
+                                        final StorageEntity targetStorage) {
+
+        Optional<BatchEntity> optionalTarget;
+
+        if (targetBatchId != null) {
+            optionalTarget = batchRepository.findByIdAndActiveTrue(targetBatchId);
+        } else {
+            optionalTarget = batchRepository.findBySourceBatchParameters(
+                    targetStorage.getId(),
+                    sourceBatch.getProduct().getId(),
+                    sourceBatch.getManufactureDate(),
+                    sourceBatch.getExpirationDate());
+        }
+
+        return getBatchEntity(sourceBatch, targetStorage, optionalTarget);
+    }
+
+    private static BatchEntity getBatchEntity(final BatchEntity sourceBatch,
+                                               final StorageEntity targetStorage,
+                                               final Optional<BatchEntity> optionalTarget) {
         final BatchEntity targetBatch = optionalTarget.orElse(new BatchEntity(
                 sourceBatch.getProduct(),
                 targetStorage,
@@ -133,6 +152,7 @@ public class RequestServiceImpl implements RequestService {
     @Transactional
     public RequestFullResponseDto update(final RequestUpdateDto dto) {
         final RequestEntity entity = getRequestById(dto.getId());
+        entity.setHandler(userService.getCurrentUser());
 
         final RequestState currentState = switch(entity.getStatus()) {
             case StatusType.CREATED -> new Created(entity);

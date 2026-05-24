@@ -14,7 +14,7 @@ public class Confirmed extends RequestState {
         request.setStatus(StatusType.DELIVERING);
         int deliveryCount = request.getRequestBatch().getCount();
         int sourceCount = request.getRequestBatch().getSourceBatch().getCount();
-        int sourceReserved = request.getRequestBatch().getSourceBatch().getCount();
+        int sourceReserved = request.getRequestBatch().getSourceBatch().getTotalReservedCount();
 
         if(deliveryCount > sourceCount) {
              throw new NotEnoughProductException();
@@ -27,7 +27,7 @@ public class Confirmed extends RequestState {
     public void toCancelled() {
         request.setStatus(StatusType.CANCELLED);
         int deliveryCount = request.getRequestBatch().getCount();
-        int sourceReserved = request.getRequestBatch().getSourceBatch().getCount();
+        int sourceReserved = request.getRequestBatch().getSourceBatch().getTotalReservedCount();
 
         request.getRequestBatch().getSourceBatch().setTotalReservedCount(sourceReserved - deliveryCount);
     }

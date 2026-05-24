@@ -19,11 +19,11 @@ import java.time.LocalDateTime;
 public class RequestEntity extends AbstractEntity {
 
     @JoinColumn(name = "creator_id", referencedColumnName = "id")
-    @OneToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH}, fetch = FetchType.EAGER)
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH}, fetch = FetchType.EAGER)
     private UserEntity creator;
 
     @JoinColumn(name = "handler_id", referencedColumnName = "id")
-    @OneToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH}, fetch = FetchType.EAGER)
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH}, fetch = FetchType.EAGER)
     private UserEntity handler;
 
     @PrimaryKeyJoinColumn
