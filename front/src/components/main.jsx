@@ -16,8 +16,8 @@ const CREATE_CONFIG  = { ...FIELD_CONFIG, password: { type: 'password' } };
 // are intentionally absent — no further transitions.
 const STATUS_TRANSITIONS = {
   CREATED:   ['CONFIRMED', 'CANCELLED'],
-  CONFIRMED: ['DELIVERED', 'CANCELLED'],
-  DELIVERED: ['COMPLETED', 'CANCELLED'],
+  CONFIRMED: ['DELIVERING', 'CANCELLED'],
+  DELIVERING: ['COMPLETED', 'CANCELLED'],
 };
 
 // Resolve a (possibly dotted) path against an object: 'product.name' -> obj.product?.name
@@ -63,7 +63,7 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
 
   const startEdit = async (row) => {
     try {
-      const full = await getOne(entity, row.id);
+      const full = await getOne(entity, row.id || row.name);
       setEditValues({ ...row, ...full });
     } catch (e) {
       alert(e.message || 'Ошибка');         // not a popup-driven action; alert is fine here

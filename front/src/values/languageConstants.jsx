@@ -145,7 +145,7 @@ export const LANG_CONST = {
       // request statuses
       CREATED:        "Создан",
       CONFIRMED:      "Подтверждён",
-      DELIVERED:      "Доставлен",
+      DELIVERING:      "Доставлен",
       COMPLETED:      "Завершён",
       CANCELLED:      "Отменён",
       // product types

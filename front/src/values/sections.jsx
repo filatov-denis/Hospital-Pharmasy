@@ -29,7 +29,7 @@ export const ENTITY_FIELDS = {
   product: ['name', 'description', 'isRequiredRecipe', 'manufacturer', 'countryName'],
   request: ['id', 'creatorName', 'handlerName', 'status', 'creationDate', 'productName', 'productCount'],
   country: ['name'],
-  batch:   ['name', 'product.name', 'count', 'manufactureDate', 'expirationDate'],
+  batch:   ['id', 'product.name', 'count', 'manufactureDate', 'expirationDate'],
   'request/analytics': ['number', 'creatorName', 'handlerName', 'status', 'creationDate', 'productName', 'productCount'],
 };
 
