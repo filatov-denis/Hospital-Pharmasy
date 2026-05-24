@@ -24,6 +24,19 @@ const STATUS_TRANSITIONS = {
 const getValue = (obj, path) =>
   path.split('.').reduce((o, k) => (o == null ? o : o[k]), obj);
 
+// Flatten nested objects into a single-level map keyed by dotted paths.
+// { count: 13, product: { name: 'X' } } -> { count: 13, 'product.name': 'X' }
+// Arrays and primitives are kept as-is.
+const flatten = (obj, prefix = '') => {
+  const out = {};
+  for (const [k, v] of Object.entries(obj || {})) {
+    const key = prefix ? `${prefix}.${k}` : k;
+    if (v && typeof v === 'object' && !Array.isArray(v)) Object.assign(out, flatten(v, key));
+    else out[key] = v;
+  }
+  return out;
+};
+
 const cell = (v, t) => {
   if (v == null) return '—';
   if (typeof v === 'object') return JSON.stringify(v);
@@ -73,7 +86,7 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
   const startView = async (row) => {
     try {
       const full = await getOne(entity, row.id);
-      setViewValues({ ...row, ...full });
+      setViewValues(flatten({ ...row, ...full }));
     } catch (e) {
       alert(e.message || 'Ошибка');
     }
@@ -299,7 +312,7 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
         <FormPopup
           t={t}
           title={t.view}
-          fields={Object.keys(viewValues).filter(k => k !== 'image_id' && k !== 'imageId')}
+          fields={Object.keys(viewValues).filter(k => !/(^|\.)(image_?id)$/i.test(k))}
           initial={viewValues}
           readOnly
           onCancel={() => setViewValues(null)}

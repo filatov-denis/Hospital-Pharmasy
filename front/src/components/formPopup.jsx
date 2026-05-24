@@ -70,7 +70,7 @@ export default function FormPopup({
         <h2>{title}</h2>
         {fields.map(k => (
           <div key={k} className="field">
-            <label htmlFor={`f-${k}`}>{t.fields[k] || k}</label>
+            <label htmlFor={`f-${k}`}>{t.fields[k] || t.fields[k.split('.').pop()] || k}</label>
             {renderField(k)}
           </div>
         ))}
