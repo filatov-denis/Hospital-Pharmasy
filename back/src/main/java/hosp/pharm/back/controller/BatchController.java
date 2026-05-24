@@ -15,6 +15,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -27,9 +29,16 @@ public class BatchController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST', 'NURSE')")
-    @Operation(summary = "Получить партии", description = "Позволяет получить партии конкретного склада")
-    public Page<BatchResponseDto> getAllOfStorage(@Valid final BatchFilter filter, final Pageable pageable) {
+    @Operation(summary = "Получить партии", description = "Позволяет получить партии по параметрам")
+    public Page<BatchResponseDto> getAll(@Valid final BatchFilter filter, final Pageable pageable) {
         return batchService.getAll(filter, pageable);
+    }
+
+    @GetMapping("/main")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST', 'NURSE')")
+    @Operation(summary = "Получить партии", description = "Позволяет получить партии по параметрам")
+    public List<BatchResponseDto> getAllOfMainStorage() {
+        return batchService.getAllOfMainStorage();
     }
 
     @GetMapping("/{id}")

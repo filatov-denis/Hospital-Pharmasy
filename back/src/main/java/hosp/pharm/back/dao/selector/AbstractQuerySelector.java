@@ -47,12 +47,13 @@ public abstract class AbstractQuerySelector<T extends AbstractEntity, F extends 
 
         List<T> results = query.getResultList();
 
-        return new PageImpl<>(results, pageable, getCountOfElements(filter, predicates));
+        return new PageImpl<>(results, pageable, getCountOfElements(filter));
     }
 
-    private long getCountOfElements(final F filter, List<Predicate> predicates) {
-        CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
-        Root<T> countRoot = countQuery.from(getEntityClass());
+    private long getCountOfElements(final F filter) {
+        final CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
+        final Root<T> countRoot = countQuery.from(getEntityClass());
+        final List<Predicate> predicates = createPredicates(countRoot, filter);
 
         countQuery.select(criteriaBuilder.count(countRoot)).where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
 

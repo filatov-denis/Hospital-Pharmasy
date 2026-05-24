@@ -47,6 +47,13 @@ public class BatchServiceImpl implements BatchService {
     }
 
     @Override
+    public List<BatchResponseDto> getAllOfMainStorage() {
+        final List<BatchEntity> entities = batchRepository.findAllOfMainStorage();
+
+        return entities.stream().map(batchMapper::toDto).toList();
+    }
+
+    @Override
     public BatchResponseDto getById(final Long id) {
         return batchMapper.toDto(getBatchById(id));
     }

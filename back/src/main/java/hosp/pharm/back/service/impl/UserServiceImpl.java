@@ -136,6 +136,11 @@ public class UserServiceImpl implements UserService {
 
     private void setStorage(final UserEntity entity, final Long storageId) {
         if(storageId != null) {
+            if(entity.getStorage() != null) {
+                entity.getStorage().getUsers().remove(entity);
+                entity.setStorage(null);
+            }
+
             final Optional<StorageEntity> optional = storageRepository.findById(storageId);
 
             if (optional.isEmpty()) throw new EntityNotFoundException();

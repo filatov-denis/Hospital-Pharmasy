@@ -36,4 +36,7 @@ public class UserResponseDto {
     @Schema(description = "Идентификатор склада", example = "2")
     private Long linkedStorageId;
 
+    @Schema(description = "Наименование склада", example = "Один склад")
+    private String linkedStorageName;
+
 }

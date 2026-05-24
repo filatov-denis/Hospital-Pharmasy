@@ -7,9 +7,13 @@ import hosp.pharm.back.model.dto.update.BatchUpdateDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface BatchService {
 
     Page<BatchResponseDto> getAll(final BatchFilter filter, final Pageable pageable);
+
+    List<BatchResponseDto> getAllOfMainStorage();
 
     BatchResponseDto getById(final Long id);
 
