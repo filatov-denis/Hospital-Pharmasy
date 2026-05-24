@@ -14,7 +14,7 @@ public class RequestFullResponseDto {
 
     @Schema(description = "Номер запроса", example = "12")
     @NotNull(message = "Номер запроса не может быть пустым")
-    private Long number;
+    private Long id;
 
     @Schema(description = "Имя создателя", example = "John Smith")
     @NotBlank(message = "Имя создателя не может быть пустым")

@@ -25,7 +25,7 @@ public interface RequestMapper {
 
     RequestMapper INSTANCE = Mappers.getMapper(RequestMapper.class);
 
-    @Mapping(target = "number", source = "id")
+    @Mapping(target = "id", source = "id")
     @Mapping(target = "productName", source = "entity.requestBatch.targetBatch.product.name")
     @Mapping(target = "productCount", source = "entity.requestBatch.count")
     @Mapping(target = "creatorName", expression = CREATOR_FORMATTED_NAME)
@@ -33,7 +33,7 @@ public interface RequestMapper {
     @Mapping(target = "creationDate", expression = CREATION_DATE_FORMAT)
     RequestShortResponseDto toShortDto(final RequestEntity entity);
 
-    @Mapping(target = "number", source = "id")
+    @Mapping(target = "id", source = "id")
     @Mapping(target = "creatorName", expression = CREATOR_FORMATTED_NAME)
     @Mapping(target = "handlerName", expression = HANDLER_FORMATTED_NAME)
     @Mapping(target = "creationDate", expression = CREATION_DATE_FORMAT)

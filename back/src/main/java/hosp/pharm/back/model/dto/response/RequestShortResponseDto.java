@@ -16,7 +16,7 @@ public class RequestShortResponseDto {
 
     @Schema(description = "Номер запроса", example = "4")
     @NotNull(message = "Номер запроса не может быть пустым")
-    private Long number;
+    private Long id;
 
     @Schema(description = "Имя создателя", example = "John Smith")
     @NotBlank(message = "Имя создателя не может быть пустым")
