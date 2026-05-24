@@ -170,6 +170,7 @@ export const LANG_CONST = {
     close:   "Закрыть",
     delete:  "Удалить",
     print:   "Печать",
+    histogram: "Распределение по препаратам",
     confirmDelete: "Удалить эту запись?",
     noLinkedStorage: "У пользователя не указан склад",
   },

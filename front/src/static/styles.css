@@ -250,3 +250,12 @@ a:hover, .link:hover { text-decoration: underline; }
 
 /* Read-only field display inside a popup */
 .field-value { padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r); background: var(--bg); color: var(--ink); min-height: 38px; word-break: break-word; }
+
+/* Histogram (analytics) */
+.histogram { display: flex; flex-direction: column; gap: 6px; margin-top: 20px; padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+.hist-title { font-weight: 600; font-size: 14px; color: var(--ink); margin-bottom: 6px; }
+.hist-row { display: grid; grid-template-columns: 180px 1fr 56px; align-items: center; gap: 10px; font-size: 13px; }
+.hist-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); }
+.hist-bar { background: var(--bg); border-radius: 4px; height: 14px; overflow: hidden; }
+.hist-fill { background: var(--accent); height: 100%; transition: width .25s ease; }
+.hist-value { font-variant-numeric: tabular-nums; text-align: right; color: var(--ink-2); }

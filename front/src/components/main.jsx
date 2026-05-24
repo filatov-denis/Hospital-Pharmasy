@@ -1,10 +1,11 @@
 import React from 'react';
 import '../static/styles.css';
 import Topbar from './topbar';
-import { SECTIONS_BY_ROLE, SECTION_ENTITY, ENTITY_FIELDS, ENTITY_FILTERS, ENTITY_CREATE_FIELDS, ENTITY_EDIT_FIELDS, ENTITY_DELETABLE, FIELD_CONFIG } from '../values/sections';
+import { SECTIONS_BY_ROLE, SECTION_ENTITY, ENTITY_FIELDS, ENTITY_FILTERS, ENTITY_CREATE_FIELDS, ENTITY_EDIT_FIELDS, ENTITY_DELETABLE, FIELD_CONFIG, canDo } from '../values/sections';
 import { getAll, getOne, send } from '../api';
 import FormPopup from './formPopup';
 import ConfirmPopup from './confirmPopup';
+import Histogram from './histogram';
 
 const PROFILE_FIELDS = ['name', 'middlename', 'lastname', 'password'];
 const PROFILE_CONFIG = { ...FIELD_CONFIG, password: { type: 'password' } };
@@ -21,9 +22,6 @@ const cell = (v, t) => {
   return t.values[String(v)] || String(v);
 };
 
-// Some entities don't list under /<entity>; they need a different path.
-// Today only `batch` is special — it lists per storage via /batch/{storageId}.
-
 export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
   const sections = SECTIONS_BY_ROLE[user.role] || [];
   const [active, setActive] = React.useState(sections[0]);
@@ -39,6 +37,7 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
   const [editValues, setEditValues] = React.useState(null);
   const [viewValues, setViewValues] = React.useState(null);
   const [pendingDelete, setPendingDelete] = React.useState(null);
+  const [histogram, setHistogram] = React.useState(null);
   const [refresh, setRefresh] = React.useState(0);
 
   const saveProfile = async (values) => {
@@ -100,9 +99,11 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
       .then(res => {
         if (!alive) return;
         const arr = Array.isArray(res) ? res : (res.content || res.lines || []);
-        setRows(arr); setStatus('');
+        setRows(arr);
+        setHistogram(res && !Array.isArray(res) ? (res.histogram || null) : null);
+        setStatus('');
       })
-      .catch(err => { if (alive) { setRows([]); setStatus(err.message || 'Ошибка'); } });
+      .catch(err => { if (alive) { setRows([]); setHistogram(null); setStatus(err.message || 'Ошибка'); } });
     return () => { alive = false; };
   }, [entity, filters, refresh, user, t]);
 
@@ -110,8 +111,9 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
   const filterFields = ENTITY_FILTERS[entity] || [];
   const createFields = ENTITY_CREATE_FIELDS[entity] || [];
   const editFields   = ENTITY_EDIT_FIELDS[entity] || [];
-  const editable     = editFields.length > 0;
-  const deletable    = ENTITY_DELETABLE.has(entity);
+  const canCreate    = createFields.length > 0  && canDo(entity, 'create', user.role);
+  const editable     = editFields.length > 0    && canDo(entity, 'edit',   user.role);
+  const deletable    = ENTITY_DELETABLE.has(entity) && canDo(entity, 'delete', user.role);
   const isAnalytics  = entity === 'request/analytics';
   const hasActions   = !isAnalytics;   // analytics has no per-row actions
   const colSpan      = Math.max(cols.length + (hasActions ? 1 : 0), 1);
@@ -156,12 +158,12 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
         </header>
 
         <div className="content">
-          {(filterFields.length > 0 || createFields.length > 0 || isAnalytics) && (
+          {(filterFields.length > 0 || canCreate || isAnalytics) && (
             <div style={{ display: 'flex', gap: 8 }}>
               {filterFields.length > 0 && (
                 <button type="button" className="btn btn-ghost" onClick={() => setFilterOpen(true)}>{t.filters}</button>
               )}
-              {createFields.length > 0 && (
+              {canCreate && (
                 <button type="button" className="btn btn-primary" onClick={() => setAddOpen(true)}>{t.add}</button>
               )}
               {isAnalytics && (
@@ -222,6 +224,10 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
               </tbody>
             </table>
           </div>
+
+          {isAnalytics && histogram && (
+            <Histogram data={histogram} title={t.histogram} />
+          )}
         </div>
       </div>
 

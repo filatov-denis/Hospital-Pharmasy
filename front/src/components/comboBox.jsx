@@ -59,7 +59,7 @@ export default function ComboBox({ entity, options, value, onChange, t }) {
   }, [open]);
 
   const pick = (item) => {
-    onChange(item.id);
+    onChange(item.id || item.name);
     setQuery(item.name);
     setOpen(false);
   };
@@ -76,14 +76,15 @@ export default function ComboBox({ entity, options, value, onChange, t }) {
         onChange={isStatic ? undefined : (e => { setQuery(e.target.value); setOpen(true); })}
         placeholder={isStatic ? '' : (t.search || '')}
       />
-      <span className="combo-arrow" aria-hidden="true">▾</span>
+      <svg className="combo-arrow" aria-hidden="true" viewBox="0 0 10 6" width="10" height="6">
+        <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
       {open && (
         <ul className="combo-panel">
           {items.length === 0 && <li className="combo-empty">{t.noData}</li>}
           {items.map(item => (
             <li
               key={String(item.id)}
-              className={item.id === value ? 'active' : ''}
               onMouseDown={(e) => { e.preventDefault(); pick(item); }}
             >
               {item.name}

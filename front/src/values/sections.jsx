@@ -29,7 +29,7 @@ export const ENTITY_FIELDS = {
   product: ['name', 'description', 'isRequiredRecipe', 'manufacturer', 'countryName'],
   request: ['number', 'creatorName', 'handlerName', 'status', 'creationDate', 'productName', 'productCount'],
   country: ['name'],
-  batch:   ['product.name', 'count', 'manufactureDate', 'expirationDate'],
+  batch:   ['name', 'product.name', 'count', 'manufactureDate', 'expirationDate'],
   'request/analytics': ['number', 'creatorName', 'handlerName', 'status', 'creationDate', 'productName', 'productCount'],
 };
 
@@ -52,6 +52,24 @@ export const ENTITY_CREATE_FIELDS = {
 
 // Entities that support DELETE /<entity>/{id}. /request and /country are read-only.
 export const ENTITY_DELETABLE = new Set(['user', 'storage', 'product', 'batch']);
+
+// Which roles can perform which action on which entity.
+// Combined with backend capability (ENTITY_CREATE_FIELDS / ENTITY_EDIT_FIELDS /
+// ENTITY_DELETABLE) to decide whether a button is rendered.
+//   create: shown in the Add popup / POST
+//   edit:   shown via the pencil icon / PUT
+//   delete: shown via the trash icon / DELETE
+// Edit this map to change who can do what — no component changes needed.
+export const ENTITY_PERMISSIONS = {
+  user:    { create: ['ROLE_ADMIN'],                                edit: ['ROLE_ADMIN'],                                delete: ['ROLE_ADMIN'] },
+  storage: { create: ['ROLE_ADMIN'],                                edit: ['ROLE_ADMIN'],             delete: ['ROLE_ADMIN'] },
+  product: { create: ['ROLE_ADMIN', 'ROLE_PHARMACIST'],             edit: ['ROLE_ADMIN', 'ROLE_PHARMACIST'],             delete: ['ROLE_ADMIN', 'ROLE_PHARMACIST'] },
+  request: { create: ['ROLE_ADMIN', 'ROLE_NURSE'],                  edit: ['ROLE_ADMIN', 'ROLE_ADMIN', 'ROLE_PHARMACIST'],             delete: ['ROLE_ADMIN'] },
+  batch:   { create: ['ROLE_ADMIN', 'ROLE_PHARMACIST'],             edit: ['ROLE_ADMIN', 'ROLE_PHARMACIST'],             delete: ['ROLE_ADMIN', 'ROLE_PHARMACIST'] },
+};
+
+export const canDo = (entity, action, role) =>
+  ((ENTITY_PERMISSIONS[entity] && ENTITY_PERMISSIONS[entity][action]) || []).includes(role);
 
 // Fields shown in the "Edit" popup per entity (matches *UpdateDto DTOs, minus id).
 export const ENTITY_EDIT_FIELDS = {
@@ -86,8 +104,8 @@ export const FIELD_CONFIG = {
   targetStorageId:   { combo: 'storage' },
   creatorId:         { combo: 'user' },
   productId:         { combo: 'product' },
-  sourceBatchId:     { combo: 'batch' },
   targetBatchId:     { combo: 'batch' },
+  sourceBatchId:     { combo: 'batch' },
   creationDateFrom:  { type: 'date' },
   creationDateTo:    { type: 'date' },
   manufactureDate:   { type: 'date' },
