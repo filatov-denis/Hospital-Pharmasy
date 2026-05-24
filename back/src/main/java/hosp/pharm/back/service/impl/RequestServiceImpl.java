@@ -78,6 +78,8 @@ public class RequestServiceImpl implements RequestService {
         final StorageEntity targetStorage = storageRepository.findByIdAndActiveTrue(storageId)
                 .orElseThrow(EntityNotFoundException::new);
 
+        if (storageId.equals(sourceBatch.getStorage().getId())) throw new WrongStorageException();
+
         if (!sourceBatch.isActive()) {
             throw new UnavailableBatchException();
         }

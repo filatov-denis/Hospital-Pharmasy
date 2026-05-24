@@ -1,6 +1,5 @@
 package hosp.pharm.back.configuration;
 
-import hosp.pharm.back.exception.handler.ServiceExceptionHandler;
 import hosp.pharm.back.security.AuthEntryPoint;
 import hosp.pharm.back.security.AuthFilter;
 import hosp.pharm.back.service.UserService;
@@ -17,7 +16,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 

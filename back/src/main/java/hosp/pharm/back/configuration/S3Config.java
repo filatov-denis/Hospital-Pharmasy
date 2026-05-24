@@ -1,6 +1,5 @@
 package hosp.pharm.back.configuration;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,10 +47,4 @@ public class S3Config {
         return client;
     }
 
-    @PostConstruct
-    public void init() {
-        System.out.println(properties.getAccessKey());
-        System.out.println(properties.getSecretKey());
-        System.out.println(properties.getUrl());
-    }
 }
