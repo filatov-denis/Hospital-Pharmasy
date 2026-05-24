@@ -12,6 +12,14 @@ const PROFILE_CONFIG = { ...FIELD_CONFIG, password: { type: 'password' } };
 // Same widget config as filters, plus password masking for the create-user form.
 const CREATE_CONFIG  = { ...FIELD_CONFIG, password: { type: 'password' } };
 
+// Allowed next-states per current request status. Terminal states (COMPLETED, CANCELLED)
+// are intentionally absent — no further transitions.
+const STATUS_TRANSITIONS = {
+  CREATED:   ['CONFIRMED', 'CANCELLED'],
+  CONFIRMED: ['DELIVERED', 'CANCELLED'],
+  DELIVERED: ['COMPLETED', 'CANCELLED'],
+};
+
 // Resolve a (possibly dotted) path against an object: 'product.name' -> obj.product?.name
 const getValue = (obj, path) =>
   path.split('.').reduce((o, k) => (o == null ? o : o[k]), obj);
@@ -276,7 +284,11 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
           title={t.edit}
           fields={editFields}
           initial={editValues}
-          config={CREATE_CONFIG}
+          config={
+            entity === 'request'
+              ? { ...CREATE_CONFIG, status: { options: STATUS_TRANSITIONS[editValues.status] || [] } }
+              : CREATE_CONFIG
+          }
           submitLabel={t.save}
           onCancel={() => setEditValues(null)}
           onApply={saveEdit}

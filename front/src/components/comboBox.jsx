@@ -87,7 +87,7 @@ export default function ComboBox({ entity, options, value, onChange, t }) {
               key={String(item.id)}
               onMouseDown={(e) => { e.preventDefault(); pick(item); }}
             >
-              {item.name}
+              {item.name || item.id}
             </li>
           ))}
         </ul>

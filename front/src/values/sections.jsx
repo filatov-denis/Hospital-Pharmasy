@@ -27,7 +27,7 @@ export const ENTITY_FIELDS = {
   user:    ['username', 'name', 'middlename', 'lastname', 'role', 'linkedStorageId'],
   storage: ['name', 'isPharmacyStorage'],
   product: ['name', 'description', 'isRequiredRecipe', 'manufacturer', 'countryName'],
-  request: ['number', 'creatorName', 'handlerName', 'status', 'creationDate', 'productName', 'productCount'],
+  request: ['id', 'creatorName', 'handlerName', 'status', 'creationDate', 'productName', 'productCount'],
   country: ['name'],
   batch:   ['name', 'product.name', 'count', 'manufactureDate', 'expirationDate'],
   'request/analytics': ['number', 'creatorName', 'handlerName', 'status', 'creationDate', 'productName', 'productCount'],

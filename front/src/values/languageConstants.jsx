@@ -142,6 +142,12 @@ export const LANG_CONST = {
       ROLE_ADMIN:     "Администратор",
       ROLE_PHARMACIST:"Фармацевт",
       ROLE_NURSE:     "Медсестра",
+      // request statuses
+      CREATED:        "Создан",
+      CONFIRMED:      "Подтверждён",
+      DELIVERED:      "Доставлен",
+      COMPLETED:      "Завершён",
+      CANCELLED:      "Отменён",
       // product types
       TABLETS:        "Таблетки",
       POWDER:         "Порошок",
