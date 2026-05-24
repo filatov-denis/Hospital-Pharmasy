@@ -39,7 +39,7 @@ export const ENTITY_FILTERS = {
   storage: ['name'],
   product: ['name', 'productType', 'countryOfOriginId', 'manufacturer'],
   request: ['creatorId', 'status', 'creationDateFrom', 'creationDateTo', 'productName'],
-  batch:   ['count', 'manufactureDate', 'expirationDate'],
+  batch:   ['name', 'count', 'manufactureDate', 'expirationDate'],
 };
 
 // Fields shown in the "Add" popup per entity (matches *CreateDto DTOs).
@@ -48,7 +48,7 @@ export const ENTITY_CREATE_FIELDS = {
   storage: ['name'],
   product: ['name', 'productType', 'description', 'isRequiredRecipe', 'manufacturer', 'countryId'],
   request: ['sourceBatchId', 'targetBatchId', 'targetStorageId', 'count'],
-  batch:   ['count', 'manufactureDate', 'expirationDate'],
+  batch:   ['name', 'count', 'manufactureDate', 'expirationDate'],
 };
 
 // Entities that support DELETE /<entity>/{id}. /request and /country are read-only.
