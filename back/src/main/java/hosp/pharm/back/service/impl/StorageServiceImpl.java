@@ -25,7 +25,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +51,13 @@ public class StorageServiceImpl implements StorageService {
     public StorageFullResponseDto getById(final Long id) {
         final UserEntity authorized = userService.getCurrentUser();
 
-        if(authorized.getRole().equals(RoleName.ROLE_NURSE) && !Objects.equals(authorized.getId(), id)) {
+        final List<Long> allowableStorageId = new java.util.ArrayList<>(List.of(1L));
+
+        if(authorized.getStorage() != null) {
+            allowableStorageId.add(authorized.getStorage().getId());
+        }
+
+        if(authorized.getRole().equals(RoleName.ROLE_NURSE) && !allowableStorageId.contains(id)) {
             throw new NotAllowedForUserException();
         }
 
