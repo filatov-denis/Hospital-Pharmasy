@@ -56,7 +56,7 @@ public class RequestController {
 
 
     @GetMapping("/analytics")
-    @PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST')")
+    @PreAuthorize("hasAnyRole('NURSE', 'ADMIN', 'PHARMACIST')")
     @Operation(summary = "Аналитика запросов", description = "Выводит аналитику запросов за месяц")
     public RequestAnalyticDto analytic() {
         return requestService.getAnalytic();

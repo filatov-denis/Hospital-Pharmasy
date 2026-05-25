@@ -22,6 +22,7 @@ public enum ExceptionMessage {
     WRONG_BATCH("Неправильный тип партии для запроса"),
     WRONG_STORAGE("Неправильный тип хранилища для запроса"),
     BATCH_ALREADY_EXPIRED("Партия уже имеет истёкший срок годности"),
+    AUTHORIZATION_EXCEPTION("Нет доступа"),
     UNEXPECTED_ERROR("Произошла непредвиденная ошибка");
 
     private String value;

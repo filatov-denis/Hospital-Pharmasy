@@ -6,14 +6,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import static hosp.pharm.back.constant.ExceptionMessage.AUTHORIZATION_EXCEPTION;
 import static hosp.pharm.back.constant.ExceptionMessage.UNEXPECTED_ERROR;
-
 
 @Slf4j
 @ControllerAdvice
@@ -25,6 +26,13 @@ public class ServiceExceptionHandler extends ResponseEntityExceptionHandler {
 
         return super.handleExceptionInternal(ex, new Message(ex.getMessage()),
                 new HttpHeaders(), ex.getStatusCode(), request);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    ResponseEntity<Object> handleAuthorizationConflict(RuntimeException ex, WebRequest request) {
+        log.error("Authorization exception occurred - [{}], message - [{}]", ex.getClass().getName(), ex.getMessage());
+        return super.handleExceptionInternal(ex, new Message(AUTHORIZATION_EXCEPTION.getValue()),
+                new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
     }
 
     @ExceptionHandler(RuntimeException.class)

@@ -10,4 +10,6 @@ public interface RequestRepository extends JpaRepository<RequestEntity, Long> {
 
     List<RequestEntity> getAllByCreationDateAfterOrderByCreationDateDesc(final LocalDateTime creationDateAfter);
 
+    List<RequestEntity> getAllByCreatorIdAndCreationDateAfterOrderByCreationDateDesc(final Long creatorId, final LocalDateTime creationDateAfter);
+
 }

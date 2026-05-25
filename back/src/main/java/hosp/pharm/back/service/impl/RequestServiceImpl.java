@@ -80,10 +80,6 @@ public class RequestServiceImpl implements RequestService {
 
         if (storageId.equals(sourceBatch.getStorage().getId())) throw new WrongStorageException();
 
-        if (!sourceBatch.isActive()) {
-            throw new UnavailableBatchException();
-        }
-
         if (sourceBatch.getCount() - sourceBatch.getTotalReservedCount() < dto.getCount()) {
             throw new NotEnoughProductException();
         }
@@ -179,7 +175,12 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public RequestAnalyticDto getAnalytic() {
         final LocalDateTime startTime = LocalDateTime.now().minusMonths(1);
-        final List<RequestEntity> entities = requestRepository.getAllByCreationDateAfterOrderByCreationDateDesc(startTime);
+
+        final UserEntity current = userService.getCurrentUser();
+        final List<RequestEntity> entities = current.getRole().equals(RoleName.ROLE_NURSE)
+                ? requestRepository.getAllByCreatorIdAndCreationDateAfterOrderByCreationDateDesc(current.getId(), startTime)
+                : requestRepository.getAllByCreationDateAfterOrderByCreationDateDesc(startTime);
+
         final Map<String, Integer> histogramData = new HashMap<>();
 
         final List<RequestShortResponseDto> lines = new ArrayList<>();

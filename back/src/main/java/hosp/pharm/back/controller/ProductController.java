@@ -27,30 +27,35 @@ public class ProductController {
 
     //todo добавить везде ограничения роли
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST')")
     @Operation(summary = "Получить продукты", description = "Позволяет получить список продуктов")
     public Page<ProductResponseDto> getAll(@Valid final ProductFilter filter, final Pageable pageable) {
         return productService.getAll(filter, pageable);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST')")
     @Operation(summary = "Получить конкретный продукт", description = "Выводит подробную информацию по конкретному продукту")
     public ProductResponseDto getById(@PathVariable final Long id) {
         return productService.getById(id);
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Добавление продукта", description = "Позволяет добавить новый продукт")
     public ProductResponseDto create(@RequestBody @Valid final ProductCreateDto dto) {
         return productService.create(dto);
     }
 
     @PutMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Обновление информации продукта", description = "Позволяет обновить информацию продукта")
     public ProductResponseDto update(@RequestBody @Valid final ProductUpdateDto dto) {
         return productService.update(dto);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Отключение продукта", description = "Делает продукт неактивным")
     public void disable(@PathVariable final Long id) {
         productService.disable(id);
