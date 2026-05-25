@@ -96,6 +96,7 @@ export const LANG_CONST = {
       deptStorages: "Склады отделений",
       myRequests:   "Мои запросы",
       batches:      "Партии",
+      batchesByStorage: "Партии по складу",
       analytics:    "Аналитика",
     },
     // Table column headers — keyed by raw API field name.
@@ -179,6 +180,8 @@ export const LANG_CONST = {
     histogram: "Распределение по препаратам",
     confirmDelete: "Удалить эту запись?",
     noLinkedStorage: "У пользователя не указан склад",
+    pickStorage: "Выберите склад",
+    storage: "Склад",
   },
   en: {
     appName: "Hospital Pharmacy",

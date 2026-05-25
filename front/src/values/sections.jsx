@@ -3,22 +3,23 @@
 
 export const SECTIONS_BY_ROLE = {
   ROLE_ADMIN: ['users', 'storages', 'medications', 'batches', 'requests', 'analytics'],
-  ROLE_PHARMACIST: ['mainStorage', 'deptStorages', 'batches', 'requests', 'analytics'],
-  ROLE_NURSE: ['deptStorages', 'batches', 'myRequests'],
+  ROLE_PHARMACIST: ['mainStorage', 'deptStorages', 'batches', 'batchesByStorage', 'requests', 'analytics'],
+  ROLE_NURSE: ['deptStorages', 'batches', 'batchesByStorage', 'myRequests'],
 };
 
 // Section -> backend entity name (used with getAll). Sections with no entity
 // (e.g. 'reports') are intentionally absent.
 export const SECTION_ENTITY = {
-  users:        'user',
-  storages:     'storage',
-  medications:  'product',
-  requests:     'request',
-  mainStorage:  'storage',
-  deptStorages: 'storage',
-  myRequests:   'request',
-  batches:      'batch',
-  analytics:    'request/analytics',
+  users:            'user',
+  storages:         'storage',
+  medications:      'product',
+  requests:         'request',
+  mainStorage:      'storage',
+  deptStorages:     'storage',
+  myRequests:       'request',
+  batches:          'batch',
+  batchesByStorage: 'batch',
+  analytics:        'request/analytics',
 };
 
 // Columns per entity (id and image fields excluded). Used to render headers
@@ -39,7 +40,8 @@ export const ENTITY_FILTERS = {
   storage: ['name'],
   product: ['name', 'productType', 'countryOfOriginId', 'manufacturer'],
   request: ['creatorId', 'status', 'creationDateFrom', 'creationDateTo', 'productName'],
-  batch:   ['productId', 'count', 'manufactureDate', 'expirationDate'],
+  // batch: no filter — backend only filters by storage, and that's done via the
+  // dedicated "batchesByStorage" section's storage selector.
 };
 
 // Fields shown in the "Add" popup per entity (matches *CreateDto DTOs).

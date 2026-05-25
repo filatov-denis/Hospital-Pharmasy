@@ -6,6 +6,7 @@ import { getAll, getOne, send } from '../api';
 import FormPopup from './formPopup';
 import ConfirmPopup from './confirmPopup';
 import Histogram from './histogram';
+import ComboBox from './comboBox';
 import { getValue } from '../utils/getValue';
 import { flatten } from '../utils/flatten';
 import { nextStates } from '../utils/transitions';
@@ -16,9 +17,11 @@ const PROFILE_CONFIG = { ...FIELD_CONFIG, password: { type: 'password' } };
 const CREATE_CONFIG  = { ...FIELD_CONFIG, password: { type: 'password' } };
 
 // For sections that don't list under the default /<entity> URL.
-// deptStorages -> GET /storage/{user.linkedStorageId}  (single-object response, wrapped to 1 row)
-const listPathFor = (activeId, entity, user) => {
+//   deptStorages     -> GET /storage/{user.linkedStorageId}  (single-object response, wrapped to 1 row)
+//   batchesByStorage -> GET /storage/{selectedStorageId}     (StorageFullResponseDto; rows come from res.batches)
+const listPathFor = (activeId, entity, user, selectedStorageId) => {
   if (activeId === 'deptStorages') return `storage/${user.linkedStorageId ?? ''}`;
+  if (activeId === 'batchesByStorage') return `storage/${selectedStorageId ?? ''}`;
   return entity;
 };
 
@@ -44,7 +47,15 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
   const [viewValues, setViewValues] = React.useState(null);
   const [pendingDelete, setPendingDelete] = React.useState(null);
   const [histogram, setHistogram] = React.useState(null);
+  const [selectedStorageId, setSelectedStorageId] = React.useState(null);
   const [refresh, setRefresh] = React.useState(0);
+
+  // Initialise the chosen storage when the section is opened.
+  // For batchesByStorage we pre-select the user's linkedStorageId so nurses
+  // (who can't list /storage) still see their batches without further interaction.
+  React.useEffect(() => {
+    setSelectedStorageId(active === 'batchesByStorage' ? (user.linkedStorageId ?? null) : null);
+  }, [active, user.linkedStorageId]);
 
   const saveProfile = async (values) => {
     const updated = await send('user', 'PUT', { id: user.id, ...values });
@@ -104,9 +115,14 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
       setStatus(t.noLinkedStorage);
       return;
     }
+    if (active === 'batchesByStorage' && !selectedStorageId) {
+      setRows([]); setHistogram(null);
+      setStatus(t.pickStorage);
+      return;
+    }
     let alive = true;
     setStatus('loading');
-    getAll(listPathFor(active, entity, user), { page: 0, size: 50, ...filters })
+    getAll(listPathFor(active, entity, user, selectedStorageId), { page: 0, size: 50, ...filters })
       .then(res => {
         if (!alive) return;
         let arr;
@@ -114,6 +130,7 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
         else if (Array.isArray(res)) arr = res;
         else if (res.content) arr = res.content;
         else if (res.lines) arr = res.lines;
+        else if (active === 'batchesByStorage' && Array.isArray(res.batches)) arr = res.batches;
         else if (typeof res === 'object') arr = [res];   // single object (e.g. GET /storage/{id})
         else arr = [];
         setRows(arr);
@@ -122,7 +139,7 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
       })
       .catch(err => { if (alive) { setRows([]); setHistogram(null); setStatus(err.message || 'Ошибка'); } });
     return () => { alive = false; };
-  }, [active, entity, filters, refresh, user, t]);
+  }, [active, entity, filters, refresh, user, t, selectedStorageId]);
 
   const cols = ENTITY_FIELDS[entity] || [];
   const filterFields = ENTITY_FILTERS[entity] || [];
@@ -131,8 +148,12 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
   const canCreate    = createFields.length > 0  && canDo(entity, 'create', user.role);
   const editable     = editFields.length > 0    && canDo(entity, 'edit',   user.role);
   const deletable    = ENTITY_DELETABLE.has(entity) && canDo(entity, 'delete', user.role);
-  const isAnalytics  = entity === 'request/analytics';
-  const hasActions   = !isAnalytics;   // analytics has no per-row actions
+  const isAnalytics      = entity === 'request/analytics';
+  const isBatchByStorage = active === 'batchesByStorage';
+  const hasActions       = !isAnalytics;   // analytics has no per-row actions
+  // batchesByStorage is read-only at section level: no filter, no add. Edit/delete per row stay.
+  const showFilter       = !isBatchByStorage && filterFields.length > 0;
+  const showAdd          = !isBatchByStorage && canCreate;
   const colSpan      = Math.max(cols.length + (hasActions ? 1 : 0), 1);
   const actionsWidth = 36 + (editable ? 36 : 0) + (deletable ? 36 : 0);
 
@@ -175,16 +196,27 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
         </header>
 
         <div className="content">
-          {(filterFields.length > 0 || canCreate || isAnalytics) && (
-            <div style={{ display: 'flex', gap: 8 }}>
-              {filterFields.length > 0 && (
+          {(showFilter || showAdd || isAnalytics || isBatchByStorage) && (
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              {showFilter && (
                 <button type="button" className="btn btn-ghost" onClick={() => setFilterOpen(true)}>{t.filters}</button>
               )}
-              {canCreate && (
+              {showAdd && (
                 <button type="button" className="btn btn-primary" onClick={() => setAddOpen(true)}>{t.add}</button>
               )}
               {isAnalytics && (
                 <button type="button" className="btn btn-primary" onClick={() => { /* TODO: print */ }}>{t.print}</button>
+              )}
+              {isBatchByStorage && (
+                <div style={{ minWidth: 260, flex: '0 0 auto' }}>
+                  <ComboBox
+                    entity="storage"
+                    value={selectedStorageId}
+                    onChange={setSelectedStorageId}
+                    t={{ ...t, search: t.pickStorage }}
+                    dropdown
+                  />
+                </div>
               )}
             </div>
           )}

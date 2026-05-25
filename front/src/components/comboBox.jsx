@@ -7,7 +7,7 @@ import { ENTITY_LABEL, ENTITY_DROPDOWN } from '../values/sections';
 //   options: ['VALUE_A', 'VALUE_B', ...]                  (static dropdown, not searchable)
 // In both cases the selected id is emitted via onChange. For options mode the id is
 // the raw value; the display label resolves via t.values[value] when available.
-export default function ComboBox({ entity, options, value, onChange, t }) {
+export default function ComboBox({ entity, options, value, onChange, t, dropdown = false }) {
   const [open, setOpen]   = React.useState(false);
   const [query, setQuery] = React.useState('');
   const [items, setItems] = React.useState([]);
@@ -21,7 +21,8 @@ export default function ComboBox({ entity, options, value, onChange, t }) {
   );
   const isStatic = !!staticItems;
   // Entity-backed but should behave like a static dropdown (no search, always full list).
-  const isDropdown = !!(entity && ENTITY_DROPDOWN.has(entity));
+  // Either explicit via prop, or implicit via the ENTITY_DROPDOWN registry.
+  const isDropdown = !!(dropdown || (entity && ENTITY_DROPDOWN.has(entity)));
   const noSearch = isStatic || isDropdown;
 
   // Optionally override how an entity-mode item is displayed

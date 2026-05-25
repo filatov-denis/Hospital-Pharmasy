@@ -18,6 +18,7 @@ function App() {
 
   // Auto-login from saved creds (if any).
   React.useEffect(() => {
+    document.title = "Больничная аптека. Стационар";
     const c = getCreds();
     if (!c) { setBooting(false); return; }
     authenticate(c.login, c.password, c.role)
