@@ -142,7 +142,11 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
   }, [active, entity, filters, refresh, user, t, selectedStorageId]);
 
   const cols = ENTITY_FIELDS[entity] || [];
-  const filterFields = ENTITY_FILTERS[entity] || [];
+  // Drop filter fields the current role shouldn't see.
+  // Nurse only ever sees her own requests, so the "creator" filter is meaningless for her.
+  const filterFields = (ENTITY_FILTERS[entity] || []).filter(f =>
+    !(entity === 'request' && f === 'creatorId' && user.role === 'ROLE_NURSE')
+  );
   const createFields = ENTITY_CREATE_FIELDS[entity] || [];
   const editFields   = ENTITY_EDIT_FIELDS[entity] || [];
   const canCreate    = createFields.length > 0  && canDo(entity, 'create', user.role);
@@ -205,7 +209,7 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
                 <button type="button" className="btn btn-primary" onClick={() => setAddOpen(true)}>{t.add}</button>
               )}
               {isAnalytics && (
-                <button type="button" className="btn btn-primary" onClick={() => { /* TODO: print */ }}>{t.print}</button>
+                <button type="button" className="btn btn-primary" onClick={() => window.print()}>{t.print}</button>
               )}
               {isBatchByStorage && (
                 <div style={{ minWidth: 260, flex: '0 0 auto' }}>
@@ -221,6 +225,7 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
             </div>
           )}
           <br/>
+          <div className="print-area">
           <div className="table-wrap">
             <table className="data-table">
               <thead>
@@ -277,6 +282,7 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
           {isAnalytics && histogram && (
             <Histogram data={histogram} title={t.histogram} />
           )}
+          </div>
         </div>
       </div>
 

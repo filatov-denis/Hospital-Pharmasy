@@ -266,3 +266,15 @@ a:hover, .link:hover { text-decoration: underline; }
 .hist-bar { background: var(--bg); border-radius: 4px; height: 14px; overflow: hidden; }
 .hist-fill { background: var(--accent); height: 100%; transition: width .25s ease; }
 .hist-value { font-variant-numeric: tabular-nums; text-align: right; color: var(--ink-2); }
+
+/* Print: keep only the .print-area on the page (table + histogram on analytics) */
+@media print {
+  body * { visibility: hidden; }
+  .print-area, .print-area * { visibility: visible; }
+  .print-area { position: absolute; left: 0; top: 0; width: 100%; padding: 16px; }
+  .data-table tbody tr:hover { background: transparent; }
+  /* row action buttons aren't useful on paper */
+  .icon-btn { display: none; }
+  /* let backgrounds (bars, header tint) actually print */
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
