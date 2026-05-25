@@ -6,44 +6,20 @@ import { getAll, getOne, send } from '../api';
 import FormPopup from './formPopup';
 import ConfirmPopup from './confirmPopup';
 import Histogram from './histogram';
+import { getValue } from '../utils/getValue';
+import { flatten } from '../utils/flatten';
+import { nextStates } from '../utils/transitions';
 
 const PROFILE_FIELDS = ['name', 'middlename', 'lastname', 'password'];
 const PROFILE_CONFIG = { ...FIELD_CONFIG, password: { type: 'password' } };
 // Same widget config as filters, plus password masking for the create-user form.
 const CREATE_CONFIG  = { ...FIELD_CONFIG, password: { type: 'password' } };
 
-// Allowed next-states per current request status. Terminal states (COMPLETED, CANCELLED)
-// are intentionally absent — no further transitions.
-const STATUS_TRANSITIONS = {
-  CREATED:   ['CONFIRMED', 'CANCELLED'],
-  CONFIRMED: ['DELIVERING', 'CANCELLED'],
-  DELIVERING: ['COMPLETED', 'CANCELLED'],
-};
-
-// Resolve a (possibly dotted) path against an object: 'product.name' -> obj.product?.name
-const getValue = (obj, path) =>
-  path.split('.').reduce((o, k) => (o == null ? o : o[k]), obj);
-
 // For sections that don't list under the default /<entity> URL.
 // deptStorages -> GET /storage/{user.linkedStorageId}  (single-object response, wrapped to 1 row)
 const listPathFor = (activeId, entity, user) => {
   if (activeId === 'deptStorages') return `storage/${user.linkedStorageId ?? ''}`;
   return entity;
-};
-
-// Flatten nested objects into a single-level map keyed by dotted paths.
-// { count: 13, product: { name: 'X' } } -> { count: 13, 'product.name': 'X' }
-// Arrays and primitives are kept as-is.
-const flatten = (obj, prefix = '') => {
-  const out = {};
-  for (const [k, v] of Object.entries(obj || {})) {
-    const key = prefix ? `${prefix}.${k}` : k;
-    if (key === 'product.id')
-      continue;
-    if (v && typeof v === 'object' && !Array.isArray(v)) Object.assign(out, flatten(v, key));
-    else out[key] = v;
-  }
-  return out;
 };
 
 const cell = (v, t) => {
@@ -319,7 +295,7 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
           initial={editValues}
           config={
             entity === 'request'
-              ? { ...CREATE_CONFIG, status: { options: STATUS_TRANSITIONS[editValues.status] || [] } }
+              ? { ...CREATE_CONFIG, status: { options: nextStates(editValues.status) } }
               : CREATE_CONFIG
           }
           submitLabel={t.save}

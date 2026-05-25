@@ -1,6 +1,7 @@
 // Tiny API + auth layer.
 // Token lives in memory only — never persisted.
 // Credentials are persisted only when "remember" is on, and only to auto-login next visit.
+import { qs } from './utils/qs';
 const CREDS_KEY = 'creds';
 let token = null;
 
@@ -42,17 +43,6 @@ async function apiFetch(path, opts = {}) {
   // Empty body on 2xx (e.g. DELETE) is fine — return null instead of trying to parse.
   return text ? JSON.parse(text) : null;
 }
-
-// Flat object -> ?a=1&b=2 (skips null/empty, supports arrays).
-const qs = (params) => {
-  const u = new URLSearchParams();
-  Object.entries(params || {}).forEach(([k, v]) => {
-    if (v == null || v === '') return;
-    Array.isArray(v) ? v.forEach(x => u.append(k, x)) : u.append(k, v);
-  });
-  const s = u.toString();
-  return s ? `?${s}` : '';
-};
 
 // Internal glue used by the helpers below.
 const request = (path, { method = 'GET', query, body } = {}) =>
