@@ -19,22 +19,20 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/product")
-@PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST')")
 @Tag(name = "Продукты", description = "Содержит операции для работы с продуктами")
 public class ProductController {
 
     private final ProductService productService;
 
-    //todo добавить везде ограничения роли
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST')")
+    @PreAuthorize("hasAnyRole('NURSE', 'ADMIN', 'PHARMACIST')")
     @Operation(summary = "Получить продукты", description = "Позволяет получить список продуктов")
     public Page<ProductResponseDto> getAll(@Valid final ProductFilter filter, final Pageable pageable) {
         return productService.getAll(filter, pageable);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST')")
+    @PreAuthorize("hasAnyRole('NURSE', 'ADMIN', 'PHARMACIST')")
     @Operation(summary = "Получить конкретный продукт", description = "Выводит подробную информацию по конкретному продукту")
     public ProductResponseDto getById(@PathVariable final Long id) {
         return productService.getById(id);

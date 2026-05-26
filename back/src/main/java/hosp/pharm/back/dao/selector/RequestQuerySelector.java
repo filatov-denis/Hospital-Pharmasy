@@ -33,7 +33,7 @@ public class RequestQuerySelector extends AbstractQuerySelector<RequestEntity, R
 
         if(Objects.nonNull(filter.getCreatorId())) {
             final Join<RequestEntity, UserEntity> creator = root.join("creator", JoinType.LEFT);
-            predicates.add(criteriaBuilder.equal(creator.get("id"), current.getId()));
+            predicates.add(criteriaBuilder.equal(creator.get("id"), filter.getCreatorId()));
         }
 
         if(Objects.nonNull(filter.getStatus())) {
