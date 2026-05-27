@@ -92,7 +92,7 @@ export const LANG_CONST = {
       storages:     "Склады",
       medications:  "База лекарств",
       requests:     "Запросы",
-      mainStorage:  "Основной склад",
+      mainStorage:  "Склады",
       deptStorages: "Склады отделений",
       myRequests:   "Мои запросы",
       batches:      "Партии",
@@ -107,6 +107,7 @@ export const LANG_CONST = {
       lastname:          "Отчество",
       role:              "Роль",
       linkedStorageId:   "Склад",
+      linkedStorageName: "Склад",
       description:       "Описание",
       isRequiredRecipe:  "Рецептурный",
       manufacturer:      "Производитель",
@@ -135,6 +136,10 @@ export const LANG_CONST = {
       expirationDate:    "Срок годности",
       'product.name':    "Препарат",
       product:           "Препарат",
+      'requestBatch.targetStorageName': "Склад назначения",
+      'requestBatch.sourceStorageName': "Склад источника",
+      targetStorageName: "Склад назначения",
+      sourceStorageName: "Склад источника",
     },
     // Common backend enum / boolean values.
     values: {
@@ -182,6 +187,9 @@ export const LANG_CONST = {
     noLinkedStorage: "У пользователя не указан склад",
     pickStorage: "Выберите склад",
     storage: "Склад",
+    mainStorageOpt: "Основной склад",
+    spend: "Списать",
+    spendHint: "Доступно для списания:",
   },
   en: {
     appName: "Hospital Pharmacy",

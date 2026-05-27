@@ -1,15 +1,20 @@
 import React from 'react';
 import '../static/styles.css';
 import Topbar from './topbar';
-import { SECTIONS_BY_ROLE, SECTION_ENTITY, ENTITY_FIELDS, ENTITY_FILTERS, ENTITY_CREATE_FIELDS, ENTITY_EDIT_FIELDS, ENTITY_DELETABLE, FIELD_CONFIG, canDo } from '../values/sections';
+import { SECTIONS_BY_ROLE, SECTION_ENTITY, ENTITY_FIELDS, ENTITY_FILTERS, ENTITY_CREATE_FIELDS, ENTITY_EDIT_FIELDS, ENTITY_DELETABLE, ENTITY_LABEL, FIELD_CONFIG, canDo } from '../values/sections';
 import { getAll, getOne, send } from '../api';
 import FormPopup from './formPopup';
 import ConfirmPopup from './confirmPopup';
+import SpendPopup from './spendPopup';
 import Histogram from './histogram';
 import ComboBox from './comboBox';
 import { getValue } from '../utils/getValue';
 import { flatten } from '../utils/flatten';
 import { nextStates } from '../utils/transitions';
+
+// View-popup filter: drop image ids, nested *.id pks (e.g. product.id, requestBatch.product.id),
+// and any *.batches / batches collection (storage view dumps its full batch list otherwise).
+const VIEW_SKIP = /(^|\.)(image_?id|batches)$|\.id$/i;
 
 const PROFILE_FIELDS = ['name', 'middlename', 'lastname', 'password'];
 const PROFILE_CONFIG = { ...FIELD_CONFIG, password: { type: 'password' } };
@@ -17,11 +22,13 @@ const PROFILE_CONFIG = { ...FIELD_CONFIG, password: { type: 'password' } };
 const CREATE_CONFIG  = { ...FIELD_CONFIG, password: { type: 'password' } };
 
 // For sections that don't list under the default /<entity> URL.
-//   deptStorages     -> GET /storage/{user.linkedStorageId}  (single-object response, wrapped to 1 row)
-//   batchesByStorage -> GET /storage/{selectedStorageId}     (StorageFullResponseDto; rows come from res.batches)
+//   deptStorages     -> GET /storage/{user.linkedStorageId}   (single object, rows come from res.batches)
+//   batchesByStorage -> 'main' -> GET /batch/main (paged), else GET /storage/{id} (rows from res.batches)
 const listPathFor = (activeId, entity, user, selectedStorageId) => {
   if (activeId === 'deptStorages') return `storage/${user.linkedStorageId ?? ''}`;
-  if (activeId === 'batchesByStorage') return `storage/${selectedStorageId ?? ''}`;
+  if (activeId === 'batchesByStorage') {
+    return selectedStorageId === 'main' ? 'batch/main' : `storage/${selectedStorageId ?? ''}`;
+  }
   return entity;
 };
 
@@ -46,15 +53,59 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
   const [editValues, setEditValues] = React.useState(null);
   const [viewValues, setViewValues] = React.useState(null);
   const [pendingDelete, setPendingDelete] = React.useState(null);
+  const [spendBatch, setSpendBatch] = React.useState(null);
   const [histogram, setHistogram] = React.useState(null);
   const [selectedStorageId, setSelectedStorageId] = React.useState(null);
+  const [linkedStorageName, setLinkedStorageName] = React.useState(null);
+  const [nurseBatchOpts, setNurseBatchOpts] = React.useState(null);
   const [refresh, setRefresh] = React.useState(0);
 
-  // Initialise the chosen storage when the section is opened.
-  // For batchesByStorage we pre-select the user's linkedStorageId so nurses
-  // (who can't list /storage) still see their batches without further interaction.
+  const isNurse = user.role === 'ROLE_NURSE';
+  const isNurseRequestAdd = addOpen && entity === 'request' && isNurse;
+
+  // Nurse-only request creation: source = /batch/main, target = batches inside her own storage.
   React.useEffect(() => {
-    setSelectedStorageId(active === 'batchesByStorage' ? (user.linkedStorageId ?? null) : null);
+    if (!isNurseRequestAdd) { setNurseBatchOpts(null); return; }
+    let alive = true;
+    const fmt = (arr) => (arr || []).map(b => ({ id: b.id, name: ENTITY_LABEL.batch(b) }));
+    Promise.all([
+      getAll('batch/main', { page: 0, size: 100 }).catch(() => ({})),
+      user.linkedStorageId ? getOne('storage', user.linkedStorageId).catch(() => ({})) : Promise.resolve({}),
+    ]).then(([mainRes, ownRes]) => {
+      if (!alive) return;
+      const mainList = mainRes.content || (Array.isArray(mainRes) ? mainRes : []);
+      setNurseBatchOpts({ source: fmt(mainList), target: fmt(ownRes.batches) });
+    });
+    return () => { alive = false; };
+  }, [isNurseRequestAdd, user.linkedStorageId]);
+
+  // Resolve the user's linked storage name once (used as a label in the dropdown).
+  React.useEffect(() => {
+    if (!user.linkedStorageId) { setLinkedStorageName(null); return; }
+    getOne('storage', user.linkedStorageId)
+      .then(s => setLinkedStorageName(s && s.name))
+      .catch(() => setLinkedStorageName(null));
+  }, [user.linkedStorageId]);
+
+  // Two-item dropdown: main storage + the user's own (when present).
+  const storageOptions = React.useMemo(() => {
+    const opts = [{ id: 'main', name: t.mainStorageOpt }];
+    if (user.linkedStorageId) {
+      opts.push({
+        id: user.linkedStorageId,
+        name: linkedStorageName || `${t.storage} #${user.linkedStorageId}`,
+      });
+    }
+    return opts;
+  }, [user.linkedStorageId, linkedStorageName, t]);
+
+  // Default: own storage if present, otherwise main.
+  React.useEffect(() => {
+    if (active === 'batchesByStorage') {
+      setSelectedStorageId(user.linkedStorageId ?? 'main');
+    } else {
+      setSelectedStorageId(null);
+    }
   }, [active, user.linkedStorageId]);
 
   const saveProfile = async (values) => {
@@ -65,7 +116,10 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
   };
 
   const addEntity = async (values) => {
-    await send(entity, 'POST', values);
+    const payload = isNurseRequestAdd && user.linkedStorageId
+      ? { ...values, targetStorageId: user.linkedStorageId }
+      : values;
+    await send(entity, 'POST', payload);
     setAddOpen(false);
     setRefresh(r => r + 1);
   };
@@ -103,6 +157,12 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
   const saveEdit = async (values) => {
     await send(entity, 'PUT', { id: editValues.id, ...values });
     setEditValues(null);
+    setRefresh(r => r + 1);
+  };
+
+  const submitSpend = async (amount) => {
+    await send('batch', 'PUT', { id: spendBatch.id, count: spendBatch.count - amount });
+    setSpendBatch(null);
     setRefresh(r => r + 1);
   };
 
@@ -147,19 +207,31 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
   const filterFields = (ENTITY_FILTERS[entity] || []).filter(f =>
     !(entity === 'request' && f === 'creatorId' && user.role === 'ROLE_NURSE')
   );
-  const createFields = ENTITY_CREATE_FIELDS[entity] || [];
+  const createFieldsRaw = ENTITY_CREATE_FIELDS[entity] || [];
+  // Nurse-only: hide targetStorageId (auto-filled to linkedStorageId on submit) and swap
+  // both batch fields to static-option ComboBoxes backed by /batch/main + /storage/{id}.
+  const createFields = isNurseRequestAdd
+    ? createFieldsRaw.filter(f => f !== 'targetStorageId')
+    : createFieldsRaw;
+  const createConfig = isNurseRequestAdd && nurseBatchOpts
+    ? { ...CREATE_CONFIG,
+        sourceBatchId: { options: nurseBatchOpts.source },
+        targetBatchId: { options: nurseBatchOpts.target } }
+    : CREATE_CONFIG;
   const editFields   = ENTITY_EDIT_FIELDS[entity] || [];
   const canCreate    = createFields.length > 0  && canDo(entity, 'create', user.role);
   const editable     = editFields.length > 0    && canDo(entity, 'edit',   user.role);
   const deletable    = ENTITY_DELETABLE.has(entity) && canDo(entity, 'delete', user.role);
   const isAnalytics      = entity === 'request/analytics';
   const isBatchByStorage = active === 'batchesByStorage';
+  // Spend is only meaningful for batches inside a real department storage (not the main pharmacy view).
+  const canSpend         = isBatchByStorage && selectedStorageId != null && selectedStorageId !== 'main';
   const hasActions       = !isAnalytics;   // analytics has no per-row actions
   // batchesByStorage is read-only at section level: no filter, no add. Edit/delete per row stay.
   const showFilter       = !isBatchByStorage && filterFields.length > 0;
   const showAdd          = !isBatchByStorage && canCreate;
   const colSpan      = Math.max(cols.length + (hasActions ? 1 : 0), 1);
-  const actionsWidth = 36 + (editable ? 36 : 0) + (deletable ? 36 : 0);
+  const actionsWidth = 36 + (canSpend ? 36 : 0) + (editable ? 36 : 0) + (deletable ? 36 : 0);
 
   const fullName = [user.middlename, user.name, user.lastname].filter(Boolean).join(' ');
   const initial = (user.name || user.middlename || '?').charAt(0).toUpperCase();
@@ -214,11 +286,10 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
               {isBatchByStorage && (
                 <div style={{ minWidth: 260, flex: '0 0 auto' }}>
                   <ComboBox
-                    entity="storage"
+                    options={storageOptions}
                     value={selectedStorageId}
                     onChange={setSelectedStorageId}
-                    t={{ ...t, search: t.pickStorage }}
-                    dropdown
+                    t={t}
                   />
                 </div>
               )}
@@ -245,6 +316,13 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
                     {cols.map(c => <td key={c}>{cell(getValue(row, c), t)}</td>)}
                     {hasActions && (
                       <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                        {canSpend && (
+                          <button type="button" className="icon-btn" title={t.spend} onClick={() => setSpendBatch(row)}>
+                            <svg viewBox="0 0 16 16" width="14" height="14">
+                              <path d="M3 8.5l3 3 7-7" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </button>
+                        )}
                         <button type="button" className="icon-btn" title={t.view} onClick={() => startView(row)}>
                           <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="7" cy="7" r="5"/>
@@ -312,13 +390,13 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
         />
       )}
 
-      {addOpen && (
+      {addOpen && (!isNurseRequestAdd || nurseBatchOpts) && (
         <FormPopup
           t={t}
           title={t.add}
           fields={createFields}
           initial={{}}
-          config={CREATE_CONFIG}
+          config={createConfig}
           submitLabel={t.add}
           onCancel={() => setAddOpen(false)}
           onApply={addEntity}
@@ -346,10 +424,19 @@ export default function MainScreen({ t, user, onLogout, onUserUpdate }) {
         <FormPopup
           t={t}
           title={t.view}
-          fields={Object.keys(viewValues).filter(k => !/(^|\.)(image_?id)$/i.test(k))}
+          fields={Object.keys(viewValues).filter(k => !VIEW_SKIP.test(k))}
           initial={viewValues}
           readOnly
           onCancel={() => setViewValues(null)}
+        />
+      )}
+
+      {spendBatch && (
+        <SpendPopup
+          t={t}
+          max={spendBatch.count}
+          onCancel={() => setSpendBatch(null)}
+          onApply={submitSpend}
         />
       )}
 

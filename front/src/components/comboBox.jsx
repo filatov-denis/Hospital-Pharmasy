@@ -15,8 +15,12 @@ export default function ComboBox({ entity, options, value, onChange, t, dropdown
   const resolved = React.useRef(false);
 
   // For options mode, pre-build the {id, name} list once.
+  // Each option may be a primitive (auto-labelled via t.values) or already a {id, name} object.
   const staticItems = React.useMemo(
-    () => options ? options.map(v => ({ id: v, name: (t.values && t.values[String(v)]) || String(v) })) : null,
+    () => options ? options.map(v => {
+      if (v && typeof v === 'object') return v;
+      return { id: v, name: (t.values && t.values[String(v)]) || String(v) };
+    }) : null,
     [options, t]
   );
   const isStatic = !!staticItems;

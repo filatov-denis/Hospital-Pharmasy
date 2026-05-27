@@ -48,7 +48,7 @@ public class RequestController {
     }
 
     @PutMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PHARMACIST', 'NURSE')")
     @Operation(summary = "Обновление информации запроса", description = "Позволяет обновить состояние запроса")
     public RequestFullResponseDto update(@Valid @RequestBody final RequestUpdateDto dto) {
         return requestService.update(dto);

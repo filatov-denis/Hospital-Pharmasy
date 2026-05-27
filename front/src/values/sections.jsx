@@ -3,8 +3,8 @@
 
 export const SECTIONS_BY_ROLE = {
   ROLE_ADMIN: ['users', 'storages', 'medications', 'batches', 'requests', 'analytics'],
-  ROLE_PHARMACIST: ['mainStorage', 'deptStorages', 'medications', 'batches', 'batchesByStorage', 'requests', 'analytics'],
-  ROLE_NURSE: ['deptStorages', 'batchesByStorage', 'medications', 'myRequests', 'analytics'],
+  ROLE_PHARMACIST: ['mainStorage', 'medications', 'batches', 'batchesByStorage', 'requests', 'analytics'],
+  ROLE_NURSE: ['batchesByStorage', 'medications', 'requests', 'analytics'],
 };
 
 // Section -> backend entity name (used with getAll). Sections with no entity
@@ -67,7 +67,7 @@ export const ENTITY_PERMISSIONS = {
   user:    { create: ['ROLE_ADMIN'],                                edit: ['ROLE_ADMIN'],                                  delete: ['ROLE_ADMIN'] },
   storage: { create: ['ROLE_ADMIN'],                                edit: ['ROLE_ADMIN'],                                  delete: ['ROLE_ADMIN'] },
   product: { create: ['ROLE_ADMIN'],                                edit: ['ROLE_ADMIN'],                                  delete: ['ROLE_ADMIN'] },
-  request: { create: ['ROLE_ADMIN', 'ROLE_NURSE'],                  edit: ['ROLE_ADMIN', 'ROLE_ADMIN', 'ROLE_PHARMACIST'], delete: ['ROLE_ADMIN'] },
+  request: { create: ['ROLE_ADMIN', 'ROLE_NURSE'],                  edit: ['ROLE_ADMIN', 'ROLE_NURSE', 'ROLE_PHARMACIST'], delete: ['ROLE_ADMIN'] },
   batch:   { create: ['ROLE_ADMIN', 'ROLE_PHARMACIST'],             edit: ['ROLE_ADMIN', 'ROLE_PHARMACIST'],               delete: ['ROLE_ADMIN', 'ROLE_PHARMACIST'] },
 };
 

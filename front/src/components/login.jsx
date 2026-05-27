@@ -3,6 +3,8 @@ import '../static/styles.css';
 import Topbar from './topbar';
 import { authenticate } from '../api';
 
+const ADMIN_EMAIL = 'admin@mail.com';
+
 function LoginScreen({ t, onLogin }) {
   const [role, setRole] = React.useState(localStorage.getItem("lastRole") || "ROLE_PHARMACIST");
   const [login, setLoginVal] = React.useState("");
@@ -129,7 +131,7 @@ function LoginScreen({ t, onLogin }) {
                 </span>
                 <span>{t.remember}</span>
               </label>
-              <a href="#" className="link" onClick={(e) => e.preventDefault()}>{t.forgot}</a>
+              <a href={`mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent(t.forgot)}`} className="link">{t.forgot}</a>
             </div>
 
             {error && <div className="popup-error" role="alert">{error}</div>}
@@ -141,7 +143,7 @@ function LoginScreen({ t, onLogin }) {
 
           <footer className="login-card-foot">
             <span>{t.needHelp}</span>
-            <a href="#" className="link" onClick={(e) => e.preventDefault()}>{t.contactAdmin}</a>
+            <a href={`mailto:${ADMIN_EMAIL}`} className="link">{t.contactAdmin}</a>
           </footer>
         </section>
       </main>
