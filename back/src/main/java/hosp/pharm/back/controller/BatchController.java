@@ -21,7 +21,6 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/batch")
-
 @Tag(name = "Партии", description = "Содержит операции, связанные с партиями")
 public class BatchController {
 

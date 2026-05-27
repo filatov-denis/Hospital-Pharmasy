@@ -17,7 +17,7 @@ services:
       timeout: 3s
       retries: 3
 
-  minio:
+  redis:
     image: minio/minio:latest
     container_name: redis
     env_file:
@@ -26,7 +26,7 @@ services:
       - "9000:9000"
       - "9001:9001"
     volumes:
-      - minio-data:/data
+      - redis-data:/data
     command: [ "server", "--console-address", ":9001", "/data" ]
     healthcheck:
       test: [ "CMD", "mc", "ready", "local" ]
@@ -47,7 +47,7 @@ services:
     depends_on:
       postgres-db:
         condition: service_healthy
-      minio:
+      redis:
         condition: service_healthy
 
   hospital-frontend:
@@ -63,4 +63,4 @@ services:
 
 volumes:
   postgres-data:
-  minio-data:
+  redis-data:
